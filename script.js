@@ -12,7 +12,10 @@ const clearCartButton = document.getElementById("clear-cart-button");
 const checkoutForm = document.getElementById("checkout-form");
 const checkoutButton = document.getElementById("checkout-button");
 const checkoutFeedback = document.getElementById("checkout-feedback");
+const checkoutModal = document.getElementById("checkout-modal");
+const checkoutModalCloseButton = document.getElementById("checkout-modal-close");
 const toast = document.getElementById("toast");
+const openCheckoutTriggers = Array.from(document.querySelectorAll("[data-open-checkout]"));
 
 const modal = document.getElementById("product-modal");
 const modalCloseButton = document.getElementById("product-modal-close");
@@ -422,6 +425,21 @@ function closeAuthModal() {
   document.body.classList.remove("modal-open");
 }
 
+function openCheckoutModal() {
+  if (!checkoutModal) return;
+  checkoutModal.classList.add("is-open");
+  checkoutModal.setAttribute("aria-hidden", "false");
+  document.body.classList.add("modal-open");
+  setTimeout(() => customerName?.focus(), 50);
+}
+
+function closeCheckoutModal() {
+  if (!checkoutModal) return;
+  checkoutModal.classList.remove("is-open");
+  checkoutModal.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("modal-open");
+}
+
 function fetchAuthJson(path, options = {}) {
   if (!AUTH_API_BASE_URL || AUTH_API_BASE_URL.includes("YOUR-CLOUDFLARE-WORKER-URL")) {
     throw new Error("Set AUTH_API_BASE_URL in script.js to your Cloudflare Worker URL.");
@@ -604,6 +622,12 @@ document.querySelectorAll('a[href^="#"]').forEach((link) => {
 
     event.preventDefault();
     target.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+});
+
+openCheckoutTriggers.forEach((trigger) => {
+  trigger.addEventListener("click", () => {
+    openCheckoutModal();
   });
 });
 
@@ -969,6 +993,15 @@ checkoutForm?.addEventListener("submit", async (event) => {
   window.open(result.url, "_blank", "noopener");
 });
 
+checkoutModalCloseButton?.addEventListener("click", closeCheckoutModal);
+checkoutModal?.addEventListener("click", (event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLElement)) return;
+  if (target.dataset.closeCheckout === "true") {
+    closeCheckoutModal();
+  }
+});
+
 modalCloseButton?.addEventListener("click", closeProductModal);
 modal?.addEventListener("click", (event) => {
   const target = event.target;
@@ -981,6 +1014,7 @@ modal?.addEventListener("click", (event) => {
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
     closeProductModal();
+    closeCheckoutModal();
   }
 });
 

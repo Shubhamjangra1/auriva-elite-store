@@ -44,11 +44,13 @@
 
         <nav class="site-nav" aria-label="Primary navigation">
           <a href="#catalog">Collection</a>
-          <a href="#checkout">Checkout</a>
+          <button class="nav-link nav-link-button" type="button" data-open-checkout>Checkout</button>
           <a href="#contact">Contact</a>
         </nav>
 
-        <a class="header-cart" href="#checkout">Cart <span id="header-cart-count">0</span></a>
+        <button class="header-cart" type="button" data-open-checkout>
+          Cart <span id="header-cart-count">0</span>
+        </button>
         <button id="auth-toggle-button" class="header-auth-button" type="button">
           Login
         </button>
@@ -334,88 +336,6 @@
           </div>
         </section>
 
-        <section class="checkout-section" id="checkout">
-          <div class="section-heading">
-          <p class="eyebrow">Checkout</p>
-            <h2>Send the full order in one WhatsApp message</h2>
-          </div>
-
-          <div class="checkout-layout">
-            <div class="cart-panel">
-              <div class="panel-head">
-                <h3>Your cart</h3>
-                <button id="clear-cart-button" class="text-button" type="button">Clear</button>
-              </div>
-              <div id="cart-items" class="cart-items">
-                <p class="empty-state">Your cart is currently empty.</p>
-              </div>
-              <div class="cart-summary">
-                <span>Items <strong id="cart-count">0</strong></span>
-                <span>Total <strong id="cart-total">&#8377;0</strong></span>
-              </div>
-            </div>
-
-            <form class="checkout-form" id="checkout-form">
-              <div class="form-grid">
-                <label>
-                  <span class="field-label">Full name</span>
-                  <input id="customer-name" class="text-input" type="text" placeholder="Your full name" />
-                </label>
-
-                <label>
-                  <span class="field-label">Phone number</span>
-                  <input id="customer-phone" class="text-input" type="tel" placeholder="10-digit mobile number" />
-                </label>
-
-                <label class="field-span-2">
-                  <span class="field-label">Address line</span>
-                  <input id="customer-address" class="text-input" type="text" placeholder="House no, street, area" />
-                </label>
-
-                <label>
-                  <span class="field-label">State</span>
-                  <select id="customer-state" class="text-input">
-                    <option value="">Select state</option>
-                  </select>
-                </label>
-
-                <label>
-                  <span class="field-label">City / district</span>
-                  <select id="customer-city" class="text-input" disabled>
-                    <option value="">Select city</option>
-                  </select>
-                </label>
-
-                <label>
-                  <span class="field-label">Pincode</span>
-                  <input id="customer-pincode" class="text-input" type="text" inputmode="numeric" placeholder="Pincode" />
-                </label>
-
-                <label>
-                  <span class="field-label">Landmark</span>
-                  <input id="customer-landmark" class="text-input" type="text" placeholder="Optional landmark" />
-                </label>
-
-                <label class="field-span-2">
-                  <span class="field-label">Order note</span>
-                  <textarea id="customer-note" class="text-input text-area" rows="4" placeholder="Any colour, gifting, or delivery note"></textarea>
-                </label>
-              </div>
-
-              <div class="checkout-note">
-                COD note and delivery timeline are automatically added to the WhatsApp order message. Login is required before checkout.
-              </div>
-
-              <div class="checkout-actions">
-                <button id="checkout-button" class="button button-primary" type="submit">
-                  Checkout on WhatsApp
-                </button>
-              </div>
-              <p id="checkout-feedback" class="feedback-text" aria-live="polite"></p>
-            </form>
-          </div>
-        </section>
-
         <section class="contact-section" id="contact">
           <div class="section-heading">
             <p class="eyebrow">Contact</p>
@@ -447,7 +367,7 @@
         </div>
         <div class="footer-links">
           <a href="#catalog">Collection</a>
-          <a href="#checkout">Checkout</a>
+          <button class="footer-link-button" type="button" data-open-checkout>Checkout</button>
           <a href="#contact">Contact</a>
         </div>
       </footer>
@@ -511,6 +431,95 @@
     </div>
 
     <div id="toast" class="toast" aria-live="polite" aria-hidden="true"></div>
+
+    <div id="checkout-modal" class="checkout-modal" aria-hidden="true">
+      <div class="checkout-modal-backdrop" data-close-checkout="true"></div>
+      <div class="checkout-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="checkout-modal-title">
+        <button id="checkout-modal-close" class="modal-close" type="button" aria-label="Close checkout">
+          &times;
+        </button>
+
+        <div class="section-heading checkout-modal-heading">
+          <p class="eyebrow">Checkout</p>
+          <h2 id="checkout-modal-title">Send the full order in one WhatsApp message</h2>
+        </div>
+
+        <div class="checkout-layout checkout-layout-modal">
+          <div class="cart-panel">
+            <div class="panel-head">
+              <h3>Your cart</h3>
+              <button id="clear-cart-button" class="text-button" type="button">Clear</button>
+            </div>
+            <div id="cart-items" class="cart-items">
+              <p class="empty-state">Your cart is currently empty.</p>
+            </div>
+            <div class="cart-summary">
+              <span>Items <strong id="cart-count">0</strong></span>
+              <span>Total <strong id="cart-total">&#8377;0</strong></span>
+            </div>
+          </div>
+
+          <form class="checkout-form" id="checkout-form">
+            <div class="form-grid">
+              <label>
+                <span class="field-label">Full name</span>
+                <input id="customer-name" class="text-input" type="text" placeholder="Your full name" />
+              </label>
+
+              <label>
+                <span class="field-label">Phone number</span>
+                <input id="customer-phone" class="text-input" type="tel" placeholder="10-digit mobile number" />
+              </label>
+
+              <label class="field-span-2">
+                <span class="field-label">Address line</span>
+                <input id="customer-address" class="text-input" type="text" placeholder="House no, street, area" />
+              </label>
+
+              <label>
+                <span class="field-label">State</span>
+                <select id="customer-state" class="text-input">
+                  <option value="">Select state</option>
+                </select>
+              </label>
+
+              <label>
+                <span class="field-label">City / district</span>
+                <select id="customer-city" class="text-input" disabled>
+                  <option value="">Select city</option>
+                </select>
+              </label>
+
+              <label>
+                <span class="field-label">Pincode</span>
+                <input id="customer-pincode" class="text-input" type="text" inputmode="numeric" placeholder="Pincode" />
+              </label>
+
+              <label>
+                <span class="field-label">Landmark</span>
+                <input id="customer-landmark" class="text-input" type="text" placeholder="Optional landmark" />
+              </label>
+
+              <label class="field-span-2">
+                <span class="field-label">Order note</span>
+                <textarea id="customer-note" class="text-input text-area" rows="4" placeholder="Any colour, gifting, or delivery note"></textarea>
+              </label>
+            </div>
+
+            <div class="checkout-note">
+              COD note and delivery timeline are automatically added to the WhatsApp order message. Login is required before checkout.
+            </div>
+
+            <div class="checkout-actions">
+              <button id="checkout-button" class="button button-primary" type="submit">
+                Checkout on WhatsApp
+              </button>
+            </div>
+            <p id="checkout-feedback" class="feedback-text" aria-live="polite"></p>
+          </form>
+        </div>
+      </div>
+    </div>
 
     <div id="auth-modal" class="auth-modal" aria-hidden="true">
       <div class="auth-modal-backdrop" data-auth-close="true"></div>
