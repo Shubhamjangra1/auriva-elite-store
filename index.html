@@ -14,7 +14,7 @@
       href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=topstrip2" />
+    <link rel="stylesheet" href="styles.css?v=gallery1" />
   </head>
   <body>
     <div class="announcement-bar" role="status" aria-label="Store updates">
@@ -112,7 +112,7 @@
               data-mrp="599"
               data-tagline="A premium everyday cleaner for multiple surfaces with a special launch price."
               data-image-src="assets/all-surface-cleaner-card.jpg"
-              data-modal-image-src="assets/all-surface-cleaner-modal.jpg"
+              data-modal-gallery="assets/all-surface-cleaner-page1.jpg,assets/all-surface-cleaner-card.jpg,assets/all-surface-cleaner-page3.jpg,assets/all-surface-cleaner-modal.jpg"
               data-includes="1 cleaner bottle, usage instructions, outer pack"
               data-highlights="Multi-surface use, economical pack, easy daily cleaning"
               data-review="A strong utility product for customers who want a simple everyday cleaner at a special price."
@@ -418,13 +418,7 @@
 
         <div id="product-modal-grid" class="product-modal-grid">
           <div class="product-modal-visual" style="display:block;">
-            <img
-              id="product-modal-image"
-              class="product-modal-image"
-              src="assets/all-surface-cleaner-modal.jpg"
-              alt="All Surface Cleaner product photo"
-              style="width:100%;min-height:440px;object-fit:cover;border-radius:24px;border:1px solid rgba(109,91,69,0.1);background:#f4ede4;display:block;"
-            />
+            <div id="product-modal-gallery" class="product-modal-gallery"></div>
           </div>
 
           <div class="product-modal-content">
@@ -627,6 +621,6 @@
       </div>
     </div>
 
-    <script type="module" src="script.js?v=topstrip2"></script>
+    <script type="module" src="script.js?v=gallery1"></script>
   </body>
 </html>

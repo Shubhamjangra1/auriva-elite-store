@@ -20,7 +20,7 @@ const openCheckoutTriggers = Array.from(document.querySelectorAll("[data-open-ch
 const modal = document.getElementById("product-modal");
 const modalCloseButton = document.getElementById("product-modal-close");
 const modalGrid = document.getElementById("product-modal-grid");
-const modalImage = document.getElementById("product-modal-image");
+const modalGallery = document.getElementById("product-modal-gallery");
 const modalBadge = document.getElementById("product-modal-badge");
 const modalTitle = document.getElementById("product-modal-title");
 const modalTagline = document.getElementById("product-modal-tagline");
@@ -111,7 +111,10 @@ const products = productCards.map((card, index) => {
   const category = card.dataset.category || "";
   const tagline = card.dataset.tagline || "";
   const imageSrc = card.dataset.imageSrc || "";
-  const modalImageSrc = card.dataset.modalImageSrc || imageSrc;
+  const modalGallerySources = (card.dataset.modalGallery || card.dataset.modalImageSrc || imageSrc)
+    .split(",")
+    .map((src) => src.trim())
+    .filter(Boolean);
   const price = Number(card.dataset.price || "0");
   const mrp = Number(card.dataset.mrp || "0");
   const priceText = `\u20B9${price.toLocaleString("en-IN")}`;
@@ -131,7 +134,7 @@ const products = productCards.map((card, index) => {
     category,
     tagline,
     imageSrc,
-    modalImageSrc,
+    modalGallerySources,
     price,
     priceText,
     mrp,
@@ -850,14 +853,26 @@ function openProductModal(productId) {
   modalHighlights.textContent = product.highlights;
   modalReviewText.textContent = product.review;
 
-  if (modalImage instanceof HTMLImageElement) {
-    modalImage.src = product.modalImageSrc || "";
-    modalImage.alt = `${product.name} product photo`;
-    modalImage.style.display = product.modalImageSrc ? "block" : "none";
-  }
+  if (modalGallery) {
+    const galleryImages = product.modalGallerySources.length
+      ? product.modalGallerySources
+      : [product.imageSrc].filter(Boolean);
 
-  if (modalGrid) {
-    modalGrid.classList.toggle("has-visual", Boolean(product.modalImageSrc));
+    modalGallery.innerHTML = galleryImages
+      .map(
+        (src, index) => `
+          <img
+            class="product-modal-gallery-image"
+            src="${src}"
+            alt="${product.name} product photo ${index + 1}"
+          />
+        `
+      )
+      .join("");
+
+    if (modalGrid) {
+      modalGrid.classList.toggle("has-visual", galleryImages.length > 0);
+    }
   }
 
   modalWhatsappLink.href = buildSingleProductWhatsappUrl(product);
@@ -887,9 +902,8 @@ function closeProductModal() {
   if (modalGrid) {
     modalGrid.classList.remove("has-visual");
   }
-  if (modalImage instanceof HTMLImageElement) {
-    modalImage.style.display = "none";
-    modalImage.src = "";
+  if (modalGallery) {
+    modalGallery.innerHTML = "";
   }
   activeModalProductId = null;
 }
