@@ -34,7 +34,6 @@ const profileStateInput = document.getElementById("profile-state-input");
 const profileCityInput = document.getElementById("profile-city-input");
 const profilePincodeInput = document.getElementById("profile-pincode-input");
 const profileLandmarkInput = document.getElementById("profile-landmark-input");
-const profileNoteInput = document.getElementById("profile-note-input");
 const profileUseCheckoutButton = document.getElementById("profile-use-checkout-button");
 const profileStateOptions = document.getElementById("profile-state-options");
 const profileCityOptions = document.getElementById("profile-city-options");
@@ -535,7 +534,6 @@ function collectProfileForm() {
     city: profileCityInput?.value.trim() || "",
     pincode: profilePincodeInput?.value.trim() || "",
     landmark: profileLandmarkInput?.value.trim() || "",
-    note: profileNoteInput?.value.trim() || "",
   };
 }
 
@@ -546,7 +544,6 @@ function populateProfileForm(profile) {
   if (profilePhoneInput && !profilePhoneInput.value.trim()) profilePhoneInput.value = profile.phone || "";
   if (profileAddressInput && !profileAddressInput.value.trim()) profileAddressInput.value = profile.address || "";
   if (profileLandmarkInput && !profileLandmarkInput.value.trim()) profileLandmarkInput.value = profile.landmark || "";
-  if (profileNoteInput && !profileNoteInput.value.trim()) profileNoteInput.value = profile.note || "";
 
   if (profile.state) {
     setLocationFieldValue(
