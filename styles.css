@@ -90,20 +90,26 @@ button {
 .announcement-track {
   display: flex;
   align-items: center;
-  gap: 36px;
   min-width: max-content;
-  padding-inline: 24px;
   white-space: nowrap;
   animation: announcement-scroll 28s linear infinite;
 }
 
-.announcement-track span {
+.announcement-group {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+  padding-inline: 24px;
+  flex: 0 0 auto;
+}
+
+.announcement-group span {
   position: relative;
   letter-spacing: 0.02em;
 }
 
-.announcement-track span:not(:last-child)::after {
-  content: "â€¢";
+.announcement-group span:not(:last-child)::after {
+  content: "•";
   margin-left: 36px;
   color: var(--accent);
 }
