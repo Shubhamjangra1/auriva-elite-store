@@ -153,8 +153,7 @@ const products = productCards.map((card, index) => {
   const mrpText = mrp > price ? `\u20B9${mrp.toLocaleString("en-IN")}` : "";
   const includes = card.dataset.includes || "";
   const highlights = card.dataset.highlights || "";
-  const review = card.dataset.review || "";
-  const searchText = [name, badge, category, tagline, description, productInfo, includes, highlights, review]
+  const searchText = [name, badge, category, tagline, description, productInfo, includes, highlights]
     .join(" ")
     .toLowerCase();
 
@@ -172,7 +171,6 @@ const products = productCards.map((card, index) => {
     mrpText,
     includes,
     highlights,
-    review,
     description,
     productInfo,
     amazonUrl,
