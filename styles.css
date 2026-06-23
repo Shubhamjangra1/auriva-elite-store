@@ -146,9 +146,9 @@ button {
   top: 10px;
   z-index: 10;
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 16px 20px;
+  gap: 14px 18px;
   padding: 12px 18px;
   border-radius: 22px;
 }
@@ -216,7 +216,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 12px;
+  gap: 8px;
   flex-wrap: nowrap;
 }
 
@@ -242,7 +242,7 @@ button {
 }
 
 .header-cart {
-  padding: 10px 14px;
+  padding: 9px 13px;
   border: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.72);
   color: var(--text);
@@ -250,7 +250,7 @@ button {
 }
 
 .header-auth-button {
-  padding: 10px 14px;
+  padding: 9px 13px;
   border: 1px solid rgba(109, 91, 69, 0.18);
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(239, 229, 216, 0.85));
   color: var(--text);
@@ -260,7 +260,7 @@ button {
 }
 
 .header-profile-button {
-  padding: 10px 14px;
+  padding: 9px 13px;
   border: 1px solid rgba(109, 91, 69, 0.18);
   background: rgba(255, 255, 255, 0.8);
   color: var(--text);
