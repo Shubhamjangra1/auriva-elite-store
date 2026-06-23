@@ -19,6 +19,7 @@ const openCheckoutTriggers = Array.from(document.querySelectorAll("[data-open-ch
 
 const modal = document.getElementById("product-modal");
 const modalCloseButton = document.getElementById("product-modal-close");
+const modalGrid = document.getElementById("product-modal-grid");
 const modalImage = document.getElementById("product-modal-image");
 const modalBadge = document.getElementById("product-modal-badge");
 const modalTitle = document.getElementById("product-modal-title");
@@ -109,7 +110,8 @@ const products = productCards.map((card, index) => {
   const badge = card.dataset.badge || "";
   const category = card.dataset.category || "";
   const tagline = card.dataset.tagline || "";
-  const imageClass = card.dataset.imageClass || "";
+  const imageSrc = card.dataset.imageSrc || "";
+  const modalImageSrc = card.dataset.modalImageSrc || imageSrc;
   const price = Number(card.dataset.price || "0");
   const mrp = Number(card.dataset.mrp || "0");
   const priceText = `\u20B9${price.toLocaleString("en-IN")}`;
@@ -128,7 +130,8 @@ const products = productCards.map((card, index) => {
     badge,
     category,
     tagline,
-    imageClass,
+    imageSrc,
+    modalImageSrc,
     price,
     priceText,
     mrp,
@@ -140,6 +143,16 @@ const products = productCards.map((card, index) => {
     searchText,
     card,
   };
+});
+
+products.forEach((product) => {
+  const productImage = product.card.querySelector(".product-image");
+  if (!productImage || !product.imageSrc) return;
+
+  productImage.style.display = "block";
+  productImage.style.backgroundImage = `url("${product.imageSrc}")`;
+  productImage.style.backgroundSize = "cover";
+  productImage.style.backgroundPosition = "center";
 });
 
 function populateStateOptions() {
@@ -848,8 +861,16 @@ function openProductModal(productId) {
   modalReviewText.textContent = product.review;
 
   modalImage.className = "product-modal-image";
-  if (product.imageClass) {
-    modalImage.classList.add(product.imageClass);
+  modalImage.style.display = product.modalImageSrc ? "block" : "none";
+  modalImage.style.backgroundImage = "";
+  modalImage.style.backgroundSize = "cover";
+  modalImage.style.backgroundPosition = "center";
+  if (product.modalImageSrc) {
+    modalImage.style.backgroundImage = `url("${product.modalImageSrc}")`;
+  }
+
+  if (modalGrid) {
+    modalGrid.classList.toggle("has-visual", Boolean(product.modalImageSrc));
   }
 
   modalWhatsappLink.href = buildSingleProductWhatsappUrl(product);
@@ -876,6 +897,11 @@ function closeProductModal() {
   modal.classList.remove("is-open");
   modal.setAttribute("aria-hidden", "true");
   document.body.classList.remove("modal-open");
+  if (modalGrid) {
+    modalGrid.classList.remove("has-visual");
+  }
+  modalImage.style.display = "none";
+  modalImage.style.backgroundImage = "";
   activeModalProductId = null;
 }
 
