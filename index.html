@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Auriva &Eacute;lite</title>
+    <meta
+      name="description"
+      content="Auriva &Eacute;lite is a luxury home and lifestyle storefront with curated products, WhatsApp ordering, and Cash on Delivery across India."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="announcement-bar" role="status" aria-label="Store updates">
+      <span>WhatsApp orders only</span>
+      <span>Cash on Delivery available</span>
+      <span>Delivery in 5-9 days across India</span>
+    </div>
+
+    <div class="page-shell">
+      <header class="site-header" id="home">
+        <a href="#home" class="brand" aria-label="Auriva &Eacute;lite home">
+          <img
+            class="brand-logo"
+            src="assets/auriva-elite-logo.jpeg"
+            alt="Auriva &Eacute;lite logo"
+          />
+          <span class="brand-copy">
+            <strong>Auriva &Eacute;lite</strong>
+            <small>Luxury home & lifestyle</small>
+          </span>
+        </a>
+
+        <nav class="site-nav" aria-label="Primary navigation">
+          <a href="#catalog">Collection</a>
+          <a href="#checkout">Checkout</a>
+          <a href="#contact">Contact</a>
+        </nav>
+
+        <a class="header-cart" href="#checkout">Cart <span id="header-cart-count">0</span></a>
+        <button id="auth-toggle-button" class="header-auth-button" type="button">
+          Login
+        </button>
+      </header>
+
+      <main>
+        <section class="hero-panel">
+          <div class="hero-copy">
+            <p class="eyebrow">Auriva &Eacute;lite</p>
+            <h1>Luxury essentials for a quieter, more refined everyday ritual.</h1>
+            <p class="hero-text">
+              Discover premium lifestyle pieces with a clean boutique storefront,
+              one-click WhatsApp ordering, and Cash on Delivery support.
+            </p>
+            <div class="hero-actions">
+              <a class="button button-primary" href="#catalog">Explore collection</a>
+              <a class="button button-secondary" href="https://wa.me/919050753534" target="_blank" rel="noreferrer">
+                Order on WhatsApp
+              </a>
+            </div>
+          </div>
+
+          <div class="search-panel" id="search-panel">
+            <label class="field-label" for="search-input">Search the collection</label>
+            <input
+              id="search-input"
+              class="search-input"
+              type="search"
+              placeholder="Search candles, trays, gifting, diffuser..."
+            />
+            <div class="search-row">
+              <p id="search-results-text">Showing all 8 products</p>
+              <span class="mini-note">Click any product to view full details</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="editorial-note">
+          <p>
+            Orders are currently accepted only on WhatsApp. Cash on Delivery is
+            available, and delivery is completed within 5-9 days.
+          </p>
+        </section>
+
+        <section class="catalog-section" id="catalog">
+          <div class="section-heading">
+            <p class="eyebrow">Curated collection</p>
+            <h2>Shop the signature edit</h2>
+          </div>
+
+          <div class="product-grid" id="product-grid">
+            <article
+              class="product-card"
+              data-product-id="velvet-noir-candle"
+              data-category="Candles"
+              data-badge="Best Seller"
+              data-name="Velvet Noir Candle"
+              data-price="1499"
+              data-tagline="Warm amber, smoked woods, and a boutique hotel mood."
+              data-image-class="tone-noir"
+              data-includes="Luxury candle jar, protective lid, care card"
+              data-highlights="Long-lasting burn, premium fragrance throw, elegant shelf presence"
+              data-review="Beautiful scent and an instantly premium look for living rooms and bedrooms."
+            >
+              <button class="card-hitbox" type="button" aria-label="Open details for Velvet Noir Candle"></button>
+              <div class="product-image tone-noir" aria-hidden="true"></div>
+              <div class="product-copy">
+                <span class="product-badge">Best Seller</span>
+                <h3>Velvet Noir Candle</h3>
+                <p>Warm amber, smoked woods, and a boutique hotel mood.</p>
+              </div>
+              <div class="product-footer">
+                <div class="price-block">
+                  <strong>&#8377;1,499</strong>
+                  <span>Candles</span>
+                </div>
+                <button class="add-to-cart-button" type="button">Add to cart</button>
+              </div>
+            </article>
+
+            <article
+              class="product-card"
+              data-product-id="elite-linen-mist"
+              data-category="Fragrance"
+              data-badge="Signature"
+              data-name="&Eacute;lite Linen Mist"
+              data-price="899"
+              data-tagline="Fresh, polished fragrance for linen, curtains, and soft spaces."
+              data-image-class="tone-stone"
+              data-includes="Mist bottle, usage guide, signature fragrance blend"
+              data-highlights="Fabric-safe formula, refined clean scent, everyday refresh use"
+              data-review="Perfect for keeping wardrobes, bedding, and guest rooms feeling elevated."
+            >
+              <button class="card-hitbox" type="button" aria-label="Open details for &Eacute;lite Linen Mist"></button>
+              <div class="product-image tone-stone" aria-hidden="true"></div>
+              <div class="product-copy">
+                <span class="product-badge">Signature</span>
+                <h3>&Eacute;lite Linen Mist</h3>
+                <p>Fresh, polished fragrance for linen, curtains, and soft spaces.</p>
+              </div>
+              <div class="product-footer">
+                <div class="price-block">
+                  <strong>&#8377;899</strong>
+                  <span>Fragrance</span>
+                </div>
+                <button class="add-to-cart-button" type="button">Add to cart</button>
+              </div>
+            </article>
+
+            <article
+              class="product-card"
+              data-product-id="signature-hand-wash"
+              data-category="Bath Rituals"
+              data-badge="New"
+              data-name="Signature Hand Wash"
+              data-price="749"
+              data-tagline="Minimal bottle styling with soft notes and premium placement."
+              data-image-class="tone-ivory"
+              data-includes="Hand wash bottle, ingredient label, care instructions"
+              data-highlights="Elegant countertop display, gentle cleansing, premium daily use"
+              data-review="A polished bathroom essential that feels much more expensive than ordinary hand wash."
+            >
+              <button class="card-hitbox" type="button" aria-label="Open details for Signature Hand Wash"></button>
+              <div class="product-image tone-ivory" aria-hidden="true"></div>
+              <div class="product-copy">
+                <span class="product-badge">New</span>
+                <h3>Signature Hand Wash</h3>
+                <p>Minimal bottle styling with soft notes and premium placement.</p>
+              </div>
+              <div class="product-footer">
+                <div class="price-block">
+                  <strong>&#8377;749</strong>
+                  <span>Bath Rituals</span>
+                </div>
+                <button class="add-to-cart-button" type="button">Add to cart</button>
+              </div>
+            </article>
+
+            <article
+              class="product-card"
+              data-product-id="monogram-gift-box"
+              data-category="Gifting"
+              data-badge="Gift Pick"
+              data-name="Monogram Gift Box"
+              data-price="2499"
+              data-tagline="Luxury hamper concept for festive, wedding, and corporate gifting."
+              data-image-class="tone-charcoal"
+              data-includes="Curated gift box, premium wrap, insert card"
+              data-highlights="Gift-ready presentation, premium unboxing, elegant curated selection"
+              data-review="An easy premium gifting option when you want presentation to feel special."
+            >
+              <button class="card-hitbox" type="button" aria-label="Open details for Monogram Gift Box"></button>
+              <div class="product-image tone-charcoal" aria-hidden="true"></div>
+              <div class="product-copy">
+                <span class="product-badge">Gift Pick</span>
+                <h3>Monogram Gift Box</h3>
+                <p>Luxury hamper concept for festive, wedding, and corporate gifting.</p>
+              </div>
+              <div class="product-footer">
+                <div class="price-block">
+                  <strong>&#8377;2,499</strong>
+                  <span>Gifting</span>
+                </div>
+                <button class="add-to-cart-button" type="button">Add to cart</button>
+              </div>
+            </article>
+
+            <article
+              class="product-card"
+              data-product-id="ivory-reed-diffuser"
+              data-category="Fragrance"
+              data-badge="Popular"
+              data-name="Ivory Reed Diffuser"
+              data-price="1199"
+              data-tagline="Clean fragrance presentation designed for modern interiors."
+              data-image-class="tone-pearl"
+              data-includes="Diffuser bottle, reeds, fragrance oil"
+              data-highlights="Decor-friendly bottle, subtle long wear, ideal for entryways"
+              data-review="A very easy decor plus fragrance product that suits minimal interiors beautifully."
+            >
+              <button class="card-hitbox" type="button" aria-label="Open details for Ivory Reed Diffuser"></button>
+              <div class="product-image tone-pearl" aria-hidden="true"></div>
+              <div class="product-copy">
+                <span class="product-badge">Popular</span>
+                <h3>Ivory Reed Diffuser</h3>
+                <p>Clean fragrance presentation designed for modern interiors.</p>
+              </div>
+              <div class="product-footer">
+                <div class="price-block">
+                  <strong>&#8377;1,199</strong>
+                  <span>Fragrance</span>
+                </div>
+                <button class="add-to-cart-button" type="button">Add to cart</button>
+              </div>
+            </article>
+
+            <article
+              class="product-card"
+              data-product-id="marble-tray-set"
+              data-category="Decor"
+              data-badge="Decor"
+              data-name="Marble Tray Set"
+              data-price="1899"
+              data-tagline="Decor styling piece for vanity, dining, and curated corners."
+              data-image-class="tone-marble"
+              data-includes="Marble tray set, felt base support, care note"
+              data-highlights="Multi-use styling, premium finish, suitable for vanity or console"
+              data-review="Looks extremely polished in vanity corners and with candle arrangements."
+            >
+              <button class="card-hitbox" type="button" aria-label="Open details for Marble Tray Set"></button>
+              <div class="product-image tone-marble" aria-hidden="true"></div>
+              <div class="product-copy">
+                <span class="product-badge">Decor</span>
+                <h3>Marble Tray Set</h3>
+                <p>Decor styling piece for vanity, dining, and curated corners.</p>
+              </div>
+              <div class="product-footer">
+                <div class="price-block">
+                  <strong>&#8377;1,899</strong>
+                  <span>Decor</span>
+                </div>
+                <button class="add-to-cart-button" type="button">Add to cart</button>
+              </div>
+            </article>
+
+            <article
+              class="product-card"
+              data-product-id="silk-touch-hand-cream"
+              data-category="Care"
+              data-badge="Care"
+              data-name="Silk Touch Hand Cream"
+              data-price="699"
+              data-tagline="Soft-touch finish with a premium fragrance and elegant texture."
+              data-image-class="tone-sand"
+              data-includes="Hand cream tube, usage note, premium outer pack"
+              data-highlights="Non-greasy finish, vanity friendly, soft scent profile"
+              data-review="A clean premium care item that works well for personal use or gifting."
+            >
+              <button class="card-hitbox" type="button" aria-label="Open details for Silk Touch Hand Cream"></button>
+              <div class="product-image tone-sand" aria-hidden="true"></div>
+              <div class="product-copy">
+                <span class="product-badge">Care</span>
+                <h3>Silk Touch Hand Cream</h3>
+                <p>Soft-touch finish with a premium fragrance and elegant texture.</p>
+              </div>
+              <div class="product-footer">
+                <div class="price-block">
+                  <strong>&#8377;699</strong>
+                  <span>Care</span>
+                </div>
+                <button class="add-to-cart-button" type="button">Add to cart</button>
+              </div>
+            </article>
+
+            <article
+              class="product-card"
+              data-product-id="noir-welcome-set"
+              data-category="Sets"
+              data-badge="Complete Set"
+              data-name="Noir Welcome Set"
+              data-price="3299"
+              data-tagline="A complete luxury starter set for home, gifting, or launches."
+              data-image-class="tone-midnight"
+              data-includes="Candle, diffuser, tray styling piece, premium packaging"
+              data-highlights="Curated bundle value, strong gifting appeal, elevated presentation"
+              data-review="A strong flagship option when customers want the complete Auriva &Eacute;lite feel."
+            >
+              <button class="card-hitbox" type="button" aria-label="Open details for Noir Welcome Set"></button>
+              <div class="product-image tone-midnight" aria-hidden="true"></div>
+              <div class="product-copy">
+                <span class="product-badge">Complete Set</span>
+                <h3>Noir Welcome Set</h3>
+                <p>A complete luxury starter set for home, gifting, or launches.</p>
+              </div>
+              <div class="product-footer">
+                <div class="price-block">
+                  <strong>&#8377;3,299</strong>
+                  <span>Sets</span>
+                </div>
+                <button class="add-to-cart-button" type="button">Add to cart</button>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="checkout-section" id="checkout">
+          <div class="section-heading">
+          <p class="eyebrow">Checkout</p>
+            <h2>Send the full order in one WhatsApp message</h2>
+          </div>
+
+          <div class="checkout-layout">
+            <div class="cart-panel">
+              <div class="panel-head">
+                <h3>Your cart</h3>
+                <button id="clear-cart-button" class="text-button" type="button">Clear</button>
+              </div>
+              <div id="cart-items" class="cart-items">
+                <p class="empty-state">Your cart is currently empty.</p>
+              </div>
+              <div class="cart-summary">
+                <span>Items <strong id="cart-count">0</strong></span>
+                <span>Total <strong id="cart-total">&#8377;0</strong></span>
+              </div>
+            </div>
+
+            <form class="checkout-form" id="checkout-form">
+              <div class="form-grid">
+                <label>
+                  <span class="field-label">Full name</span>
+                  <input id="customer-name" class="text-input" type="text" placeholder="Your full name" />
+                </label>
+
+                <label>
+                  <span class="field-label">Phone number</span>
+                  <input id="customer-phone" class="text-input" type="tel" placeholder="10-digit mobile number" />
+                </label>
+
+                <label class="field-span-2">
+                  <span class="field-label">Address line</span>
+                  <input id="customer-address" class="text-input" type="text" placeholder="House no, street, area" />
+                </label>
+
+                <label>
+                  <span class="field-label">State</span>
+                  <select id="customer-state" class="text-input">
+                    <option value="">Select state</option>
+                  </select>
+                </label>
+
+                <label>
+                  <span class="field-label">City / district</span>
+                  <select id="customer-city" class="text-input" disabled>
+                    <option value="">Select city</option>
+                  </select>
+                </label>
+
+                <label>
+                  <span class="field-label">Pincode</span>
+                  <input id="customer-pincode" class="text-input" type="text" inputmode="numeric" placeholder="Pincode" />
+                </label>
+
+                <label>
+                  <span class="field-label">Landmark</span>
+                  <input id="customer-landmark" class="text-input" type="text" placeholder="Optional landmark" />
+                </label>
+
+                <label class="field-span-2">
+                  <span class="field-label">Order note</span>
+                  <textarea id="customer-note" class="text-input text-area" rows="4" placeholder="Any colour, gifting, or delivery note"></textarea>
+                </label>
+              </div>
+
+              <div class="checkout-note">
+                COD note and delivery timeline are automatically added to the WhatsApp order message. Login is required before checkout.
+              </div>
+
+              <div class="checkout-actions">
+                <button id="checkout-button" class="button button-primary" type="submit">
+                  Checkout on WhatsApp
+                </button>
+              </div>
+              <p id="checkout-feedback" class="feedback-text" aria-live="polite"></p>
+            </form>
+          </div>
+        </section>
+
+        <section class="contact-section" id="contact">
+          <div class="section-heading">
+            <p class="eyebrow">Contact</p>
+            <h2>Reach Auriva &Eacute;lite directly</h2>
+          </div>
+
+          <div class="contact-list">
+            <a href="https://wa.me/919050753534" target="_blank" rel="noreferrer">
+              WhatsApp <span>+91 90507 53534</span>
+            </a>
+            <a href="mailto:shubham.jangra.1999@gmail.com">
+              Email <span>shubham.jangra.1999@gmail.com</span>
+            </a>
+            <a
+              href="https://www.instagram.com/auriva_elite?igsh=NWJlYWJxaGgxZ2Vr&utm_source=qr"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Instagram <span>@auriva_elite</span>
+            </a>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <div>
+          <strong>Auriva &Eacute;lite</strong>
+          <p>Luxury home and lifestyle. Orders currently accepted on WhatsApp only.</p>
+        </div>
+        <div class="footer-links">
+          <a href="#catalog">Collection</a>
+          <a href="#checkout">Checkout</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </footer>
+    </div>
+
+    <div id="product-modal" class="product-modal" aria-hidden="true">
+      <div class="product-modal-backdrop" data-close-modal="true"></div>
+      <div class="product-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="product-modal-title">
+        <button id="product-modal-close" class="modal-close" type="button" aria-label="Close product details">
+          &times;
+        </button>
+
+        <div class="product-modal-grid">
+          <div class="product-modal-visual">
+            <div id="product-modal-image" class="product-modal-image"></div>
+          </div>
+
+          <div class="product-modal-content">
+            <span id="product-modal-badge" class="product-badge"></span>
+            <h3 id="product-modal-title"></h3>
+            <p id="product-modal-tagline" class="product-modal-tagline"></p>
+            <div id="product-modal-price" class="product-modal-price"></div>
+
+            <div class="modal-info-block">
+              <h4>Product overview</h4>
+              <p id="product-modal-description"></p>
+            </div>
+
+            <div class="modal-info-block">
+              <h4>What's inside the box</h4>
+              <p id="product-modal-includes"></p>
+            </div>
+
+            <div class="modal-info-block">
+              <h4>Highlights</h4>
+              <p id="product-modal-highlights"></p>
+            </div>
+
+            <div class="modal-info-block">
+              <h4>Customer note</h4>
+              <p id="product-modal-review-text"></p>
+            </div>
+
+            <div class="modal-actions">
+              <button id="product-modal-cart" class="button button-primary" type="button">
+                Add to cart
+              </button>
+              <a
+                id="product-modal-whatsapp"
+                class="button button-secondary"
+                href="https://wa.me/919050753534"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Buy on WhatsApp
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast" class="toast" aria-live="polite" aria-hidden="true"></div>
+
+    <div id="auth-modal" class="auth-modal" aria-hidden="true">
+      <div class="auth-modal-backdrop" data-auth-close="true"></div>
+      <div class="auth-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+        <button id="auth-modal-close" class="modal-close" type="button" aria-label="Close login panel">
+          &times;
+        </button>
+
+        <p class="eyebrow">Secure access</p>
+        <h2 id="auth-modal-title">Login with email code</h2>
+        <p class="auth-modal-text">
+          You need to sign in before checkout. We’ll send a free 6-digit code through our secure Cloudflare auth flow.
+        </p>
+
+        <div id="auth-status" class="auth-status" aria-live="polite">
+          Enter your email to receive a login code.
+        </div>
+
+        <div class="auth-form">
+          <label>
+            <span class="field-label">Email address</span>
+            <input
+              id="auth-email"
+              class="text-input"
+              type="email"
+              placeholder="you@example.com"
+              autocomplete="email"
+            />
+          </label>
+
+          <div class="auth-actions">
+            <button id="auth-send-button" class="button button-primary" type="button">
+              Send code
+            </button>
+            <button id="auth-logout-button" class="button button-secondary" type="button">
+              Logout
+            </button>
+          </div>
+
+          <label>
+            <span class="field-label">6-digit code</span>
+            <input
+              id="auth-code"
+              class="text-input"
+              type="text"
+              inputmode="numeric"
+              maxlength="6"
+              placeholder="Enter code"
+              autocomplete="one-time-code"
+            />
+          </label>
+
+          <div class="auth-actions">
+            <button id="auth-verify-button" class="button button-primary" type="button">
+              Verify code
+            </button>
+          </div>
+
+          <p class="auth-help">
+            Browsing stays open, but checkout is locked until you sign in successfully.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+  </body>
+</html>

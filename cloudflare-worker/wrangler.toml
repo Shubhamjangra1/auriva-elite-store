@@ -1,0 +1,20 @@
+name = "auriva-elite-auth"
+main = "src/index.js"
+compatibility_date = "2026-06-23"
+
+[vars]
+OTP_TTL_SECONDS = 600
+SESSION_TTL_SECONDS = 2592000
+AUTH_EMAIL_FROM = "Auriva Elite <onboarding@resend.dev>"
+
+[[kv_namespaces]]
+binding = "OTP_CODES"
+id = "e94096da210d4095ac3ffba909841023"
+
+[[kv_namespaces]]
+binding = "SESSIONS"
+id = "14710f0c03454511986ddda084605d9d"
+
+[[kv_namespaces]]
+binding = "PROFILES"
+id = "36711723c2b644939183326c718c7a92"

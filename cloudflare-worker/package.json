@@ -1,0 +1,5 @@
+{
+  "name": "auriva-elite-auth-worker",
+  "private": true,
+  "type": "module"
+}
