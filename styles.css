@@ -441,6 +441,12 @@ button {
     linear-gradient(135deg, #29231f, #08090d);
 }
 
+.tone-cleaner {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.06)),
+    url("assets/all-surface-cleaner.jpg") center center / cover no-repeat;
+}
+
 .tone-stone {
   background:
     radial-gradient(circle at 26% 26%, rgba(255, 255, 255, 0.46), transparent 20%),
@@ -533,9 +539,17 @@ button {
   font-weight: 700;
 }
 
+.price-block-discount {
+  gap: 4px;
+}
+
 .price-block span {
   color: #9a8773;
   font-size: 0.88rem;
+}
+
+.price-block s {
+  color: #b29b83;
 }
 
 .add-to-cart-button {
@@ -814,6 +828,28 @@ button {
 .product-modal-price {
   margin-bottom: 18px;
   color: #7d664f;
+}
+
+.product-modal-price {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.product-price-current {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #2f251d;
+}
+
+.product-price-mrp {
+  font-size: 0.92rem;
+  color: #9b846a;
+}
+
+.product-price-mrp s {
+  color: #b29b83;
 }
 
 .modal-info-block + .modal-info-block {

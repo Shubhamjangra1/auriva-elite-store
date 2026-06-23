@@ -111,7 +111,9 @@ const products = productCards.map((card, index) => {
   const tagline = card.dataset.tagline || "";
   const imageClass = card.dataset.imageClass || "";
   const price = Number(card.dataset.price || "0");
+  const mrp = Number(card.dataset.mrp || "0");
   const priceText = `\u20B9${price.toLocaleString("en-IN")}`;
+  const mrpText = mrp > price ? `\u20B9${mrp.toLocaleString("en-IN")}` : "";
   const includes = card.dataset.includes || "";
   const highlights = card.dataset.highlights || "";
   const review = card.dataset.review || "";
@@ -129,6 +131,8 @@ const products = productCards.map((card, index) => {
     imageClass,
     price,
     priceText,
+    mrp,
+    mrpText,
     includes,
     highlights,
     review,
@@ -837,7 +841,7 @@ function openProductModal(productId) {
   modalBadge.textContent = product.badge;
   modalTitle.textContent = product.name;
   modalTagline.textContent = product.tagline;
-  modalPrice.textContent = product.priceText;
+  modalPrice.innerHTML = renderProductPrice(product);
   modalDescription.textContent = product.description;
   modalIncludes.textContent = product.includes;
   modalHighlights.textContent = product.highlights;
@@ -853,6 +857,17 @@ function openProductModal(productId) {
   modal.classList.add("is-open");
   modal.setAttribute("aria-hidden", "false");
   document.body.classList.add("modal-open");
+}
+
+function renderProductPrice(product) {
+  if (product.mrp && product.mrp > product.price) {
+    return `
+      <span class="product-price-current">${product.priceText}</span>
+      <span class="product-price-mrp"><s>${product.mrpText}</s> MRP</span>
+    `;
+  }
+
+  return `<span class="product-price-current">${product.priceText}</span>`;
 }
 
 function closeProductModal() {
