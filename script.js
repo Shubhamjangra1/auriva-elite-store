@@ -80,6 +80,7 @@ const authVerifyButton = document.getElementById("auth-verify-button");
 const authLogoutButton = document.getElementById("auth-logout-button");
 
 const AUTH_API_BASE_URL = "https://auriva-elite-auth.auriva-elite-auth.workers.dev";
+const REVIEWS_API_BASE_URL = "https://auriva-elite-reviews-api.auriva-elite-auth.workers.dev";
 const AUTH_SESSION_KEY = "auriva-elite-auth-session";
 const PROFILE_STORAGE_PREFIX = "auriva-elite-profile:";
 
@@ -440,28 +441,44 @@ function saveProfileLocally(profile) {
   }
 }
 
-function getReviewStorageKey(productId) {
-  return `auriva-elite-reviews:${productId}`;
+function fetchReviewJson(path, options = {}) {
+  if (!REVIEWS_API_BASE_URL || REVIEWS_API_BASE_URL.includes("YOUR-REVIEW-WORKER-URL")) {
+    throw new Error("Set REVIEWS_API_BASE_URL in script.js to your review Worker URL.");
+  }
+
+  const headers = new Headers(options.headers || {});
+  headers.set("Content-Type", "application/json");
+
+  return fetch(`${REVIEWS_API_BASE_URL}${path}`, {
+    ...options,
+    headers,
+  }).then(async (response) => {
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(data?.error || "Request failed");
+    }
+    return data;
+  });
 }
 
-function readProductReviews(productId) {
+async function fetchProductReviews(productId) {
   if (!productId) return [];
 
-  try {
-    return JSON.parse(localStorage.getItem(getReviewStorageKey(productId)) || "[]");
-  } catch {
-    return [];
-  }
+  const data = await fetchReviewJson(`/reviews?productId=${encodeURIComponent(productId)}`);
+  return Array.isArray(data?.reviews) ? data.reviews : [];
 }
 
-function saveProductReviews(productId, reviews) {
-  if (!productId) return;
+async function postProductReview(productId, author, comment) {
+  if (!productId) return null;
 
-  try {
-    localStorage.setItem(getReviewStorageKey(productId), JSON.stringify(reviews));
-  } catch {
-    // Ignore localStorage issues.
-  }
+  return fetchReviewJson("/reviews", {
+    method: "POST",
+    body: JSON.stringify({
+      productId,
+      author,
+      comment,
+    }),
+  });
 }
 
 function getDefaultReviewName() {
@@ -492,10 +509,22 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
-function renderProductReviews(productId) {
+async function renderProductReviews(productId) {
   if (!productReviewList || !productReviewCount) return;
 
-  const reviews = readProductReviews(productId);
+  productReviewCount.textContent = "Loading reviews…";
+  productReviewList.innerHTML =
+    '<p class="empty-state product-review-empty">Loading reviews for this product…</p>';
+
+  let reviews = [];
+  try {
+    reviews = await fetchProductReviews(productId);
+  } catch {
+    reviews = [];
+  }
+
+  if (activeModalProductId !== productId) return;
+
   productReviewCount.textContent = reviews.length === 1 ? "1 review" : `${reviews.length} reviews`;
 
   if (reviews.length === 0) {
@@ -526,7 +555,7 @@ function resetProductReviewForm() {
   if (productReviewText) productReviewText.value = "";
 }
 
-function saveProductReview(productId) {
+async function saveProductReview(productId) {
   if (!productId || !productReviewText) return;
 
   const author = (productReviewName?.value.trim() || getDefaultReviewName()).slice(0, 60);
@@ -537,15 +566,19 @@ function saveProductReview(productId) {
     return;
   }
 
-  const reviews = readProductReviews(productId);
-  reviews.push({
-    author,
-    comment: comment.slice(0, 800),
-    timestamp: Date.now(),
-  });
+  if (!REVIEWS_API_BASE_URL || REVIEWS_API_BASE_URL.includes("YOUR-REVIEW-WORKER-URL")) {
+    showToast("Review sharing is not configured yet");
+    return;
+  }
 
-  saveProductReviews(productId, reviews);
-  renderProductReviews(productId);
+  try {
+    await postProductReview(productId, author, comment.slice(0, 800));
+    await renderProductReviews(productId);
+  } catch (error) {
+    showToast(error?.message || "Could not post your review");
+    return;
+  }
+
   resetProductReviewForm();
   showToast("Review posted");
 }

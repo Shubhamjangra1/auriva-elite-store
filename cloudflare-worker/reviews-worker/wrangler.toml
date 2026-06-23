@@ -1,0 +1,8 @@
+name = "auriva-elite-reviews-api"
+main = "src/index.js"
+compatibility_date = "2026-06-23"
+
+[[d1_databases]]
+binding = "REVIEWS_DB"
+database_name = "auriva-elite-reviews"
+database_id = "8ba9579f-88a6-464d-90d4-c5dfc4214203"
