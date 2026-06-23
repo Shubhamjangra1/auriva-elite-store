@@ -50,7 +50,6 @@ const modalInfoBlock = document.getElementById("product-modal-info-block");
 const modalInfo = document.getElementById("product-modal-info");
 const modalIncludes = document.getElementById("product-modal-includes");
 const modalHighlights = document.getElementById("product-modal-highlights");
-const modalReviewText = document.getElementById("product-modal-review-text");
 const productReviewForm = document.getElementById("product-review-form");
 const productReviewName = document.getElementById("product-review-name");
 const productReviewText = document.getElementById("product-review-text");
@@ -1225,7 +1224,6 @@ function openProductModal(productId) {
   }
   modalIncludes.textContent = product.includes;
   modalHighlights.textContent = product.highlights;
-  modalReviewText.textContent = product.review;
 
   if (modalGallery) {
     const galleryImages = product.modalGallerySources.length
@@ -1315,9 +1313,6 @@ function closeProductModal() {
   }
   if (productReviewCount) {
     productReviewCount.textContent = "0 reviews";
-  }
-  if (productReviewText) {
-    productReviewText.value = "";
   }
   activeModalProductId = null;
   activeGalleryIndex = 0;
