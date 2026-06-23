@@ -14,7 +14,7 @@
       href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=a161d25" />
   </head>
   <body>
     <div class="announcement-bar" role="status" aria-label="Store updates">
@@ -117,7 +117,12 @@
               data-review="A strong utility product for customers who want a simple everyday cleaner at a special price."
             >
               <button class="card-hitbox" type="button" aria-label="Open details for All Surface Cleaner"></button>
-              <div class="product-image tone-cleaner" aria-hidden="true"></div>
+              <img
+                class="product-card-photo"
+                src="assets/all-surface-cleaner-card.jpg"
+                alt="All Surface Cleaner product photo"
+                style="width:100%;height:224px;object-fit:cover;border-radius:20px;border:1px solid rgba(109,91,69,0.1);background:#f4ede4;display:block;"
+              />
               <div class="product-copy">
                 <span class="product-badge">Special Offer</span>
                 <h3>All Surface Cleaner</h3>
@@ -411,8 +416,14 @@
         </button>
 
         <div id="product-modal-grid" class="product-modal-grid">
-          <div class="product-modal-visual">
-            <div id="product-modal-image" class="product-modal-image"></div>
+          <div class="product-modal-visual" style="display:block;">
+            <img
+              id="product-modal-image"
+              class="product-modal-image"
+              src="assets/all-surface-cleaner-modal.jpg"
+              alt="All Surface Cleaner product photo"
+              style="width:100%;min-height:440px;object-fit:cover;border-radius:24px;border:1px solid rgba(109,91,69,0.1);background:#f4ede4;display:block;"
+            />
           </div>
 
           <div class="product-modal-content">
@@ -615,6 +626,6 @@
       </div>
     </div>
 
-    <script type="module" src="script.js"></script>
+    <script type="module" src="script.js?v=a161d25"></script>
   </body>
 </html>

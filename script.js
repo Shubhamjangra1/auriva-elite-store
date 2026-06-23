@@ -145,16 +145,6 @@ const products = productCards.map((card, index) => {
   };
 });
 
-products.forEach((product) => {
-  const productImage = product.card.querySelector(".product-image");
-  if (!productImage || !product.imageSrc) return;
-
-  productImage.style.display = "block";
-  productImage.style.backgroundImage = `url("${product.imageSrc}")`;
-  productImage.style.backgroundSize = "cover";
-  productImage.style.backgroundPosition = "center";
-});
-
 function populateStateOptions() {
   if (!customerState) return;
 
@@ -860,13 +850,10 @@ function openProductModal(productId) {
   modalHighlights.textContent = product.highlights;
   modalReviewText.textContent = product.review;
 
-  modalImage.className = "product-modal-image";
-  modalImage.style.display = product.modalImageSrc ? "block" : "none";
-  modalImage.style.backgroundImage = "";
-  modalImage.style.backgroundSize = "cover";
-  modalImage.style.backgroundPosition = "center";
-  if (product.modalImageSrc) {
-    modalImage.style.backgroundImage = `url("${product.modalImageSrc}")`;
+  if (modalImage instanceof HTMLImageElement) {
+    modalImage.src = product.modalImageSrc || "";
+    modalImage.alt = `${product.name} product photo`;
+    modalImage.style.display = product.modalImageSrc ? "block" : "none";
   }
 
   if (modalGrid) {
@@ -900,8 +887,10 @@ function closeProductModal() {
   if (modalGrid) {
     modalGrid.classList.remove("has-visual");
   }
-  modalImage.style.display = "none";
-  modalImage.style.backgroundImage = "";
+  if (modalImage instanceof HTMLImageElement) {
+    modalImage.style.display = "none";
+    modalImage.src = "";
+  }
   activeModalProductId = null;
 }
 
