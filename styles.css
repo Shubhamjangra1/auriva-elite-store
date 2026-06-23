@@ -316,6 +316,15 @@ button {
   margin-top: 6px;
 }
 
+.search-top-strip {
+  margin: 14px 0 4px;
+}
+
+.search-top-shell {
+  max-width: 760px;
+  padding: 0;
+}
+
 .hero-text,
 .editorial-note p,
 .product-copy p,
