@@ -250,12 +250,21 @@ button {
   white-space: nowrap;
 }
 
+.header-profile-button {
+  padding: 10px 14px;
+  border: 1px solid rgba(109, 91, 69, 0.18);
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--text);
+  font-weight: 600;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
 .header-auth-button[data-state="signed-in"] {
   background: linear-gradient(135deg, #d9c0a0 0%, #c7a883 100%);
   color: #fffdf9;
   border-color: transparent;
 }
-
 .top-strip {
   margin-top: 18px;
   padding: 18px 0 8px;
@@ -858,12 +867,123 @@ button {
   font-size: clamp(2rem, 4vw, 2.9rem);
 }
 
+.profile-modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  z-index: 44;
+}
+
+.profile-modal.is-open {
+  display: block;
+}
+
+.profile-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(41, 31, 22, 0.34);
+  backdrop-filter: blur(8px);
+}
+
+.profile-modal-dialog {
+  position: relative;
+  width: min(1040px, calc(100% - 28px));
+  margin: 16px auto;
+  border-radius: 26px;
+  padding: 22px;
+  background: var(--panel-strong);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+}
+
+.profile-layout {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 18px;
+}
+
+.profile-summary,
+.profile-form {
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(109, 91, 69, 0.1);
+  border-radius: 24px;
+  padding: 22px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+.profile-summary h3 {
+  margin: 0 0 14px;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.9rem;
+  line-height: 0.95;
+}
+
+.profile-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.profile-summary-grid div {
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: rgba(251, 248, 243, 0.9);
+  border: 1px solid rgba(109, 91, 69, 0.08);
+}
+
+.profile-summary-grid span {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #9b846a;
+}
+
+.profile-summary-grid strong {
+  color: var(--text);
+  font-weight: 600;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.profile-summary-wide {
+  grid-column: 1 / -1;
+}
+
+.profile-form {
+  display: grid;
+  gap: 16px;
+}
+
+.profile-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .checkout-layout-modal .checkout-form {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
 }
 
 .checkout-layout-modal .cart-panel {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+.auth-help {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.feedback-text[data-tone="success"] {
+  color: #54714f;
+}
+
+.feedback-text[data-tone="error"] {
+  color: #9a4e40;
 }
 
 .product-modal-content h3 {
@@ -1167,3 +1287,4 @@ body.modal-open {
     font-size: clamp(1.8rem, 8vw, 2.4rem);
   }
 }
+

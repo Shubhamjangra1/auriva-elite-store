@@ -16,6 +16,26 @@ const checkoutModal = document.getElementById("checkout-modal");
 const checkoutModalCloseButton = document.getElementById("checkout-modal-close");
 const toast = document.getElementById("toast");
 const openCheckoutTriggers = Array.from(document.querySelectorAll("[data-open-checkout]"));
+const profileButton = document.getElementById("profile-button");
+const profileModal = document.getElementById("profile-modal");
+const profileModalCloseButton = document.getElementById("profile-modal-close");
+const profileForm = document.getElementById("profile-form");
+const profileFeedback = document.getElementById("profile-feedback");
+const profileEmail = document.getElementById("profile-email");
+const profilePhone = document.getElementById("profile-phone");
+const profileAddress = document.getElementById("profile-address");
+const profileCity = document.getElementById("profile-city");
+const profileState = document.getElementById("profile-state");
+const profilePincode = document.getElementById("profile-pincode");
+const profileNameInput = document.getElementById("profile-name");
+const profilePhoneInput = document.getElementById("profile-phone-input");
+const profileAddressInput = document.getElementById("profile-address-input");
+const profileStateInput = document.getElementById("profile-state-input");
+const profileCityInput = document.getElementById("profile-city-input");
+const profilePincodeInput = document.getElementById("profile-pincode-input");
+const profileLandmarkInput = document.getElementById("profile-landmark-input");
+const profileNoteInput = document.getElementById("profile-note-input");
+const profileUseCheckoutButton = document.getElementById("profile-use-checkout-button");
 
 const modal = document.getElementById("product-modal");
 const modalCloseButton = document.getElementById("product-modal-close");
@@ -170,16 +190,16 @@ function populateStateOptions() {
   customerState.innerHTML = options;
 }
 
-function populateCityOptions(stateName) {
-  if (!customerCity) return;
+function populateCityOptions(stateName, selectElement = customerCity) {
+  if (!selectElement) return;
 
   const cities = fullCityMap.get(stateName) || stateCityMap[stateName] || [];
-  customerCity.innerHTML =
+  selectElement.innerHTML =
     ['<option value="">Select city</option>']
       .concat(cities.map((city) => `<option value="${city}">${city}</option>`))
       .join("");
 
-  customerCity.disabled = cities.length === 0;
+  selectElement.disabled = cities.length === 0;
 }
 
 async function loadFullIndiaLocationData() {
@@ -245,10 +265,10 @@ function setSelectedValue(selectElement, value) {
   return true;
 }
 
-function ensureCityOption(cityName) {
-  if (!customerCity || !cityName) return;
+function ensureCityOption(cityName, selectElement = customerCity) {
+  if (!selectElement || !cityName) return;
 
-  const exists = Array.from(customerCity.options).some(
+  const exists = Array.from(selectElement.options).some(
     (option) => option.value.trim().toLowerCase() === cityName.trim().toLowerCase()
   );
 
@@ -256,7 +276,7 @@ function ensureCityOption(cityName) {
     const option = document.createElement("option");
     option.value = cityName;
     option.textContent = cityName;
-    customerCity.appendChild(option);
+    selectElement.appendChild(option);
   }
 }
 
@@ -427,6 +447,118 @@ function updateCheckoutButton() {
     : "Login to checkout";
 }
 
+function updateProfileButton() {
+  if (!profileButton) return;
+  profileButton.hidden = !authUser;
+}
+
+function setProfileMessage(message, tone = "neutral") {
+  if (!profileFeedback) return;
+  profileFeedback.textContent = message;
+  profileFeedback.dataset.tone = tone;
+}
+
+function collectProfileForm() {
+  return {
+    name: profileNameInput?.value.trim() || "",
+    phone: profilePhoneInput?.value.trim() || "",
+    address: profileAddressInput?.value.trim() || "",
+    state: profileStateInput?.value.trim() || "",
+    city: profileCityInput?.value.trim() || "",
+    pincode: profilePincodeInput?.value.trim() || "",
+    landmark: profileLandmarkInput?.value.trim() || "",
+    note: profileNoteInput?.value.trim() || "",
+  };
+}
+
+function populateProfileForm(profile) {
+  if (!profile) return;
+
+  if (profileNameInput && !profileNameInput.value.trim()) profileNameInput.value = profile.name || "";
+  if (profilePhoneInput && !profilePhoneInput.value.trim()) profilePhoneInput.value = profile.phone || "";
+  if (profileAddressInput && !profileAddressInput.value.trim()) profileAddressInput.value = profile.address || "";
+  if (profileLandmarkInput && !profileLandmarkInput.value.trim()) profileLandmarkInput.value = profile.landmark || "";
+  if (profileNoteInput && !profileNoteInput.value.trim()) profileNoteInput.value = profile.note || "";
+
+  if (profile.state) {
+    const changed = setSelectedValue(profileStateInput, profile.state);
+    if (changed) {
+      populateCityOptions(profileStateInput.value, profileCityInput);
+    }
+  }
+
+  if (profile.city) {
+    ensureCityOption(profile.city, profileCityInput);
+    setSelectedValue(profileCityInput, profile.city);
+  }
+
+  if (profilePincodeInput && !profilePincodeInput.value.trim()) profilePincodeInput.value = profile.pincode || "";
+}
+
+function updateProfileSummary(profile) {
+  if (profileEmail) profileEmail.textContent = getAuthEmailAddress() || "-";
+  if (profilePhone) profilePhone.textContent = profile?.phone || "-";
+  if (profileAddress) profileAddress.textContent = profile?.address || "-";
+  if (profileCity) profileCity.textContent = profile?.city || "-";
+  if (profileState) profileState.textContent = profile?.state || "-";
+  if (profilePincode) profilePincode.textContent = profile?.pincode || "-";
+}
+
+function openProfileModal() {
+  if (!authUser) {
+    openAuthModal();
+    return;
+  }
+
+  const profile = collectCheckoutProfile();
+  populateProfileForm(readSavedProfile(getAuthEmailAddress()) || profile);
+  updateProfileSummary(profile);
+  setProfileMessage("These are the details saved to your account.", "neutral");
+
+  if (!profileModal) return;
+  profileModal.classList.add("is-open");
+  profileModal.setAttribute("aria-hidden", "false");
+  document.body.classList.add("modal-open");
+  setTimeout(() => profileNameInput?.focus(), 50);
+}
+
+function closeProfileModal() {
+  if (!profileModal) return;
+  profileModal.classList.remove("is-open");
+  profileModal.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("modal-open");
+}
+
+async function saveProfileFromProfileModal() {
+  if (!authUser) {
+    openAuthModal();
+    return;
+  }
+
+  const profile = collectProfileForm();
+  if (!profile.name || !profile.phone || !profile.address || !profile.state || !profile.city || !profile.pincode) {
+    setProfileMessage("Please fill name, phone, address, state, city, and pincode before saving.", "error");
+    return;
+  }
+
+  populateCheckoutProfile(profile);
+  saveProfileLocally(profile);
+  updateProfileSummary(profile);
+  setProfileMessage("Profile saved and synced with checkout.", "success");
+  showToast("Profile saved");
+
+  if (authSessionToken) {
+    try {
+      await fetchAuthJson("/api/profile", {
+        method: "PUT",
+        body: JSON.stringify({ email: getAuthEmailAddress(), profile }),
+      });
+    } catch {
+      // Keep the local profile if the server sync is unavailable.
+    }
+  }
+}
+
 function openAuthModal() {
   if (!authModal) return;
   authModal.classList.add("is-open");
@@ -490,6 +622,10 @@ function saveAuthSession(token, email) {
   } catch {
     // Ignore storage errors.
   }
+
+  updateAuthButton();
+  updateCheckoutButton();
+  updateProfileButton();
 }
 
 function clearAuthSession() {
@@ -501,6 +637,10 @@ function clearAuthSession() {
   } catch {
     // Ignore storage errors.
   }
+
+  updateAuthButton();
+  updateCheckoutButton();
+  updateProfileButton();
 }
 
 async function restoreAuthSession() {
@@ -523,6 +663,7 @@ async function restoreAuthSession() {
       populateCheckoutProfile(session.profile);
       saveProfileLocally(session.profile);
     }
+    updateProfileButton();
   } catch {
     clearAuthSession();
   }
@@ -582,11 +723,10 @@ async function verifyLoginCode() {
     });
 
     saveAuthSession(result.sessionToken, result.email);
-    updateAuthButton();
-    updateCheckoutButton();
     closeAuthModal();
     populateCheckoutProfile(result.profile || readSavedProfile(result.email) || null);
     await persistCheckoutProfile();
+    updateProfileButton();
     setAuthMessage(`Signed in as ${result.email}.`, "success");
     showToast("Login successful");
   } catch (error) {
@@ -606,9 +746,8 @@ async function logoutUser() {
   }
 
   clearAuthSession();
-  updateAuthButton();
-  updateCheckoutButton();
   setAuthMessage("You have been signed out.", "neutral");
+  closeProfileModal();
   openAuthModal();
 }
 
@@ -616,6 +755,7 @@ async function initializeAuth() {
   await restoreAuthSession();
   updateAuthButton();
   updateCheckoutButton();
+  updateProfileButton();
 
   if (!AUTH_API_BASE_URL || AUTH_API_BASE_URL.includes("YOUR-CLOUDFLARE-WORKER-URL")) {
     setAuthMessage("Cloudflare auth is not configured yet. Please update AUTH_API_BASE_URL.", "error");
@@ -657,10 +797,27 @@ authToggleButton?.addEventListener("click", () => {
   openAuthModal();
 });
 
+profileButton?.addEventListener("click", () => {
+  openProfileModal();
+});
+
 authModalCloseButton?.addEventListener("click", closeAuthModal);
 authSendButton?.addEventListener("click", requestLoginCode);
 authVerifyButton?.addEventListener("click", verifyLoginCode);
 authLogoutButton?.addEventListener("click", logoutUser);
+profileModalCloseButton?.addEventListener("click", closeProfileModal);
+profileForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  await saveProfileFromProfileModal();
+});
+profileUseCheckoutButton?.addEventListener("click", () => {
+  const profile = collectProfileForm();
+  populateCheckoutProfile(profile);
+  saveProfileLocally(profile);
+  closeProfileModal();
+  openCheckoutModal();
+  showToast("Checkout opened with saved profile");
+});
 
 authCode?.addEventListener("input", () => {
   if (!authCode) return;
@@ -686,6 +843,14 @@ authModal?.addEventListener("click", (event) => {
   if (!(target instanceof HTMLElement)) return;
   if (target.dataset.authClose === "true") {
     closeAuthModal();
+  }
+});
+
+profileModal?.addEventListener("click", (event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLElement)) return;
+  if (target.dataset.profileClose === "true") {
+    closeProfileModal();
   }
 });
 

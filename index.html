@@ -14,7 +14,7 @@
       href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=amazon3" />
+    <link rel="stylesheet" href="styles.css?v=amazon4" />
   </head>
   <body>
     <div class="announcement-bar" role="status" aria-label="Store updates">
@@ -54,6 +54,9 @@
 
         <button class="header-cart" type="button" data-open-checkout>
           Cart <span id="header-cart-count">0</span>
+        </button>
+        <button id="profile-button" class="header-profile-button" type="button" hidden>
+          Profile
         </button>
         <button id="auth-toggle-button" class="header-auth-button" type="button">
           Login
@@ -634,6 +637,92 @@
       </div>
     </div>
 
-    <script type="module" src="script.js?v=amazon3"></script>
+    <div id="profile-modal" class="profile-modal" aria-hidden="true">
+      <div class="profile-modal-backdrop" data-profile-close="true"></div>
+      <div class="profile-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="profile-modal-title">
+        <button id="profile-modal-close" class="modal-close" type="button" aria-label="Close profile panel">
+          &times;
+        </button>
+
+        <div class="section-heading checkout-modal-heading">
+          <p class="eyebrow">Profile</p>
+          <h2 id="profile-modal-title">Your saved details</h2>
+        </div>
+
+        <div class="profile-layout">
+          <div class="profile-summary">
+            <h3>Account summary</h3>
+            <div class="profile-summary-grid">
+              <div><span>Email</span><strong id="profile-email">-</strong></div>
+              <div><span>Phone</span><strong id="profile-phone">-</strong></div>
+              <div class="profile-summary-wide"><span>Address</span><strong id="profile-address">-</strong></div>
+              <div><span>City</span><strong id="profile-city">-</strong></div>
+              <div><span>State</span><strong id="profile-state">-</strong></div>
+              <div><span>Pincode</span><strong id="profile-pincode">-</strong></div>
+            </div>
+          </div>
+
+          <form class="profile-form" id="profile-form">
+            <div class="form-grid">
+              <label>
+                <span class="field-label">Full name</span>
+                <input id="profile-name" class="text-input" type="text" placeholder="Your full name" />
+              </label>
+
+              <label>
+                <span class="field-label">Phone number</span>
+                <input id="profile-phone-input" class="text-input" type="tel" placeholder="10-digit mobile number" />
+              </label>
+
+              <label class="field-span-2">
+                <span class="field-label">Address line</span>
+                <input id="profile-address-input" class="text-input" type="text" placeholder="House no, street, area" />
+              </label>
+
+              <label>
+                <span class="field-label">State</span>
+                <select id="profile-state-input" class="text-input">
+                  <option value="">Select state</option>
+                </select>
+              </label>
+
+              <label>
+                <span class="field-label">City / district</span>
+                <select id="profile-city-input" class="text-input" disabled>
+                  <option value="">Select city</option>
+                </select>
+              </label>
+
+              <label>
+                <span class="field-label">Pincode</span>
+                <input id="profile-pincode-input" class="text-input" type="text" inputmode="numeric" placeholder="Pincode" />
+              </label>
+
+              <label>
+                <span class="field-label">Landmark</span>
+                <input id="profile-landmark-input" class="text-input" type="text" placeholder="Optional landmark" />
+              </label>
+
+              <label class="field-span-2">
+                <span class="field-label">Order note</span>
+                <textarea id="profile-note-input" class="text-input text-area" rows="4" placeholder="Any colour, gifting, or delivery note"></textarea>
+              </label>
+            </div>
+
+            <div class="profile-actions">
+              <button id="profile-save-button" class="button button-primary" type="submit">
+                Save profile
+              </button>
+              <button id="profile-use-checkout-button" class="button button-secondary" type="button">
+                Open checkout with saved details
+              </button>
+            </div>
+            <p id="profile-feedback" class="feedback-text" aria-live="polite"></p>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="script.js?v=amazon4"></script>
   </body>
 </html>
