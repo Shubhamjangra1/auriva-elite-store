@@ -14,7 +14,7 @@
       href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=amazon11" />
+    <link rel="stylesheet" href="styles.css?v=amazon12" />
   </head>
   <body>
     <div class="announcement-bar" role="status" aria-label="Store updates">
@@ -62,15 +62,17 @@
           <a href="#contact">Contact</a>
         </nav>
 
-        <button class="header-cart" type="button" data-open-checkout>
-          Cart <span id="header-cart-count">0</span>
-        </button>
-        <button id="profile-button" class="header-profile-button" type="button" hidden>
-          Profile
-        </button>
-        <button id="auth-toggle-button" class="header-auth-button" type="button">
-          Login
-        </button>
+        <div class="header-actions">
+          <button class="header-cart" type="button" data-open-checkout>
+            Cart <span id="header-cart-count">0</span>
+          </button>
+          <button id="profile-button" class="header-profile-button" type="button" hidden>
+            Profile
+          </button>
+          <button id="auth-toggle-button" class="header-auth-button" type="button">
+            Login
+          </button>
+        </div>
       </header>
 
       <main>
@@ -724,6 +726,6 @@
     <datalist id="profile-state-options"></datalist>
     <datalist id="profile-city-options"></datalist>
 
-    <script type="module" src="script.js?v=amazon11"></script>
+    <script type="module" src="script.js?v=amazon12"></script>
   </body>
 </html>
