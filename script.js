@@ -26,11 +26,14 @@ const modalTitle = document.getElementById("product-modal-title");
 const modalTagline = document.getElementById("product-modal-tagline");
 const modalPrice = document.getElementById("product-modal-price");
 const modalDescription = document.getElementById("product-modal-description");
+const modalInfoBlock = document.getElementById("product-modal-info-block");
+const modalInfo = document.getElementById("product-modal-info");
 const modalIncludes = document.getElementById("product-modal-includes");
 const modalHighlights = document.getElementById("product-modal-highlights");
 const modalReviewText = document.getElementById("product-modal-review-text");
 const modalCartButton = document.getElementById("product-modal-cart");
 const modalWhatsappLink = document.getElementById("product-modal-whatsapp");
+const modalAmazonLink = document.getElementById("product-modal-amazon");
 
 const customerName = document.getElementById("customer-name");
 const customerPhone = document.getElementById("customer-phone");
@@ -116,6 +119,9 @@ const products = productCards.map((card, index) => {
     .split(",")
     .map((src) => src.trim())
     .filter(Boolean);
+  const description = card.dataset.description || `${name} is part of the Auriva \u00C9lite ${category.toLowerCase()} edit, designed for customers who want a more refined premium presentation at home.`;
+  const productInfo = card.dataset.productInfo || "";
+  const amazonUrl = card.dataset.amazonUrl || "";
   const price = Number(card.dataset.price || "0");
   const mrp = Number(card.dataset.mrp || "0");
   const priceText = `\u20B9${price.toLocaleString("en-IN")}`;
@@ -123,8 +129,7 @@ const products = productCards.map((card, index) => {
   const includes = card.dataset.includes || "";
   const highlights = card.dataset.highlights || "";
   const review = card.dataset.review || "";
-  const description = `${name} is part of the Auriva \u00C9lite ${category.toLowerCase()} edit, designed for customers who want a more refined premium presentation at home.`;
-  const searchText = [name, badge, category, tagline, includes, highlights, review]
+  const searchText = [name, badge, category, tagline, description, productInfo, includes, highlights, review]
     .join(" ")
     .toLowerCase();
 
@@ -144,6 +149,8 @@ const products = productCards.map((card, index) => {
     highlights,
     review,
     description,
+    productInfo,
+    amazonUrl,
     searchText,
     card,
   };
@@ -851,6 +858,12 @@ function openProductModal(productId) {
   modalTagline.textContent = product.tagline;
   modalPrice.innerHTML = renderProductPrice(product);
   modalDescription.textContent = product.description;
+  if (modalInfo) {
+    modalInfo.innerHTML = renderProductInformation(product.productInfo);
+    if (modalInfoBlock) {
+      modalInfoBlock.style.display = product.productInfo ? "" : "none";
+    }
+  }
   modalIncludes.textContent = product.includes;
   modalHighlights.textContent = product.highlights;
   modalReviewText.textContent = product.review;
@@ -863,6 +876,10 @@ function openProductModal(productId) {
   }
 
   modalWhatsappLink.href = buildSingleProductWhatsappUrl(product);
+  if (modalAmazonLink) {
+    modalAmazonLink.href = product.amazonUrl || "https://www.amazon.in/dp/B0H6FYXG3X";
+    modalAmazonLink.style.display = product.amazonUrl ? "" : "none";
+  }
 
   modal.classList.add("is-open");
   modal.setAttribute("aria-hidden", "false");
@@ -880,6 +897,37 @@ function renderProductPrice(product) {
   return `<span class="product-price-current">${product.priceText}</span>`;
 }
 
+function renderProductInformation(productInfo) {
+  if (!productInfo) return "";
+
+  const items = productInfo
+    .split("|")
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .map((entry) => {
+      const [label, ...rest] = entry.split(":");
+      const value = rest.join(":").trim();
+      return {
+        label: (label || "").trim(),
+        value,
+      };
+    })
+    .filter((item) => item.label && item.value);
+
+  if (!items.length) return "";
+
+  return items
+    .map(
+      (item) => `
+        <div class="product-info-row">
+          <span>${item.label}</span>
+          <strong>${item.value}</strong>
+        </div>
+      `
+    )
+    .join("");
+}
+
 function closeProductModal() {
   if (!modal) return;
 
@@ -891,6 +939,15 @@ function closeProductModal() {
   }
   if (modalGallery) {
     modalGallery.innerHTML = "";
+  }
+  if (modalInfo) {
+    modalInfo.innerHTML = "";
+  }
+  if (modalInfoBlock) {
+    modalInfoBlock.style.display = "";
+  }
+  if (modalAmazonLink) {
+    modalAmazonLink.style.display = "";
   }
   activeModalProductId = null;
   activeGalleryIndex = 0;
