@@ -407,7 +407,7 @@ button {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
   padding: 16px;
   border-radius: 22px;
   background: rgba(255, 255, 255, 0.7);
@@ -429,66 +429,9 @@ button {
   z-index: 1;
 }
 
-.product-image {
-  position: relative;
-  z-index: 0;
-  height: 230px;
-  border-radius: 18px;
-  border: 1px solid rgba(109, 91, 69, 0.09);
-}
-
-.tone-noir {
-  background:
-    radial-gradient(circle at 24% 24%, rgba(255, 255, 255, 0.36), transparent 18%),
-    linear-gradient(135deg, #29231f, #08090d);
-}
-
-.tone-cleaner {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.06)),
-    url("assets/all-surface-cleaner.jpg") center center / cover no-repeat;
-}
-
-.tone-stone {
-  background:
-    radial-gradient(circle at 26% 26%, rgba(255, 255, 255, 0.46), transparent 20%),
-    linear-gradient(135deg, #e9e3dc, #b7aea5);
-}
-
-.tone-ivory {
-  background:
-    radial-gradient(circle at 24% 24%, rgba(255, 255, 255, 0.6), transparent 18%),
-    linear-gradient(135deg, #fbf5ea, #d9c8b0);
-}
-
-.tone-charcoal {
-  background:
-    radial-gradient(circle at 24% 24%, rgba(255, 255, 255, 0.28), transparent 18%),
-    linear-gradient(135deg, #4e4a46, #17181d);
-}
-
-.tone-pearl {
-  background:
-    radial-gradient(circle at 25% 26%, rgba(255, 255, 255, 0.62), transparent 18%),
-    linear-gradient(135deg, #f8f3ec, #d7cec3);
-}
-
-.tone-marble {
-  background:
-    radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.5), transparent 18%),
-    linear-gradient(135deg, #f2ece5, #c6beb5);
-}
-
-.tone-sand {
-  background:
-    radial-gradient(circle at 24% 24%, rgba(255, 255, 255, 0.48), transparent 18%),
-    linear-gradient(135deg, #efe5d8, #d2bca1);
-}
-
-.tone-midnight {
-  background:
-    radial-gradient(circle at 25% 24%, rgba(255, 255, 255, 0.32), transparent 18%),
-    linear-gradient(135deg, #312820, #0f1015);
+.product-image,
+.product-modal-visual {
+  display: none;
 }
 
 .product-copy {
@@ -748,8 +691,8 @@ button {
 
 .product-modal-grid {
   display: grid;
-  grid-template-columns: 0.9fr 1.1fr;
-  gap: 24px;
+  grid-template-columns: 1fr;
+  gap: 0;
 }
 
 .checkout-modal {
