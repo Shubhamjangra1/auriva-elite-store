@@ -171,7 +171,7 @@ button {
 }
 
 .brand-copy strong,
-.hero-copy h1,
+.top-strip-copy h1,
 .section-heading h2,
 .product-card h3,
 .product-modal-content h3,
@@ -250,18 +250,21 @@ button {
   border-color: transparent;
 }
 
-.hero-panel {
+.top-strip {
   margin-top: 18px;
-  padding: 0;
-  display: block;
+  padding: 18px 0 8px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) auto;
+  gap: 18px 24px;
+  align-items: center;
   background: transparent;
   border: 0;
   box-shadow: none;
   backdrop-filter: none;
 }
 
-.hero-copy {
-  max-width: 860px;
+.top-strip-copy {
+  max-width: 780px;
 }
 
 .eyebrow {
@@ -272,15 +275,30 @@ button {
   font-size: 0.82rem;
 }
 
-.hero-copy h1,
+.top-strip-copy h1,
 .section-heading h2 {
   margin: 0;
-  line-height: 1;
+  line-height: 1.02;
 }
 
-.hero-copy h1 {
-  max-width: 11ch;
-  font-size: clamp(2.8rem, 4.6vw, 4.4rem);
+.top-strip-copy h1 {
+  max-width: 16ch;
+  font-size: clamp(2rem, 3vw, 2.8rem);
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 600;
+}
+
+.top-strip-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.top-strip-search {
+  grid-column: 1 / -1;
+  max-width: 760px;
+  margin-top: 6px;
 }
 
 .hero-text,
@@ -300,13 +318,6 @@ button {
 .hero-text {
   max-width: 56ch;
   margin: 18px 0 0;
-}
-
-.hero-actions {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-top: 24px;
 }
 
 .button,
@@ -334,14 +345,6 @@ button {
   background: rgba(255, 255, 255, 0.72);
   border-color: var(--line);
   color: var(--text);
-}
-
-.hero-search {
-  margin-top: 28px;
-  max-width: 740px;
-  padding: 0;
-  background: transparent;
-  border: 0;
 }
 
 .field-label {
@@ -957,6 +960,7 @@ body.modal-open {
 }
 
 @media (max-width: 1100px) {
+  .top-strip,
   .checkout-layout,
   .product-modal-grid,
   .product-modal-grid.has-visual {
@@ -1003,8 +1007,8 @@ body.modal-open {
 
   .site-nav,
   .footer-links,
-  .hero-actions,
-  .auth-actions {
+  .auth-actions,
+  .top-strip-actions {
     flex-wrap: wrap;
   }
 
@@ -1012,9 +1016,9 @@ body.modal-open {
     gap: 16px;
   }
 
-  .hero-copy h1 {
+  .top-strip-copy h1 {
     max-width: none;
-    font-size: clamp(2.6rem, 11vw, 4rem);
+    font-size: clamp(2.2rem, 9vw, 3.2rem);
   }
 
   .product-grid,
