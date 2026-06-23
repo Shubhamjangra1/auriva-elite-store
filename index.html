@@ -14,7 +14,7 @@
       href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=amazon2" />
+    <link rel="stylesheet" href="styles.css?v=amazon3" />
   </head>
   <body>
     <div class="announcement-bar" role="status" aria-label="Store updates">
@@ -430,6 +430,21 @@
             <p id="product-modal-tagline" class="product-modal-tagline"></p>
             <div id="product-modal-price" class="product-modal-price"></div>
 
+            <div class="modal-actions">
+              <button id="product-modal-cart" class="button button-primary" type="button">
+                Add to cart
+              </button>
+              <a
+                id="product-modal-amazon"
+                class="button button-secondary"
+                href="https://www.amazon.in/dp/B0H6FYXG3X"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Buy on Amazon
+              </a>
+            </div>
+
             <div class="modal-info-block">
               <h4>Product overview</h4>
               <p id="product-modal-description"></p>
@@ -455,29 +470,6 @@
               <p id="product-modal-review-text"></p>
             </div>
 
-            <div class="modal-actions">
-              <button id="product-modal-cart" class="button button-primary" type="button">
-                Add to cart
-              </button>
-              <a
-                id="product-modal-whatsapp"
-                class="button button-secondary"
-                href="https://wa.me/919050753534"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Buy on WhatsApp
-              </a>
-              <a
-                id="product-modal-amazon"
-                class="button button-secondary"
-                href="https://www.amazon.in/dp/B0H6FYXG3X"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Buy on Amazon
-              </a>
-            </div>
           </div>
         </div>
       </div>
@@ -638,6 +630,6 @@
       </div>
     </div>
 
-    <script type="module" src="script.js?v=amazon2"></script>
+    <script type="module" src="script.js?v=amazon3"></script>
   </body>
 </html>

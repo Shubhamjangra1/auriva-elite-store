@@ -32,7 +32,6 @@ const modalIncludes = document.getElementById("product-modal-includes");
 const modalHighlights = document.getElementById("product-modal-highlights");
 const modalReviewText = document.getElementById("product-modal-review-text");
 const modalCartButton = document.getElementById("product-modal-cart");
-const modalWhatsappLink = document.getElementById("product-modal-whatsapp");
 const modalAmazonLink = document.getElementById("product-modal-amazon");
 
 const customerName = document.getElementById("customer-name");
@@ -826,27 +825,6 @@ function filterProducts(query) {
       : `Showing ${visibleCount} of ${products.length} products for "${query.trim()}"`;
 }
 
-function buildSingleProductWhatsappUrl(product) {
-  const phone = customerPhone?.value.trim() || "";
-  const lines = [
-    "Hello Auriva \u00C9lite, I want to order this product:",
-    "",
-    `Product: ${product.name}`,
-    `Price: ${product.priceText}`,
-    `Category: ${product.category}`,
-    "Delivery timeline: 5-9 days",
-    "Payment mode: Cash on Delivery",
-  ];
-
-  if (phone) {
-    lines.push(`Customer phone: ${phone}`);
-  }
-
-  return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-    lines.join("\n")
-  )}`;
-}
-
 function openProductModal(productId) {
   const product = findProduct(productId);
   if (!product || !modal) return;
@@ -875,7 +853,6 @@ function openProductModal(productId) {
     renderProductGallery(product.name, galleryImages);
   }
 
-  modalWhatsappLink.href = buildSingleProductWhatsappUrl(product);
   if (modalAmazonLink) {
     modalAmazonLink.href = product.amazonUrl || "https://www.amazon.in/dp/B0H6FYXG3X";
     modalAmazonLink.style.display = product.amazonUrl ? "" : "none";

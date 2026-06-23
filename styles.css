@@ -947,7 +947,7 @@ button {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
-  margin-top: 22px;
+  margin: 6px 0 18px;
 }
 
 .auth-modal {
