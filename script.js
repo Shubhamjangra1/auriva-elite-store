@@ -34,7 +34,6 @@ const profileStateInput = document.getElementById("profile-state-input");
 const profileCityInput = document.getElementById("profile-city-input");
 const profilePincodeInput = document.getElementById("profile-pincode-input");
 const profileLandmarkInput = document.getElementById("profile-landmark-input");
-const profileUseCheckoutButton = document.getElementById("profile-use-checkout-button");
 const profileStateOptions = document.getElementById("profile-state-options");
 const profileCityOptions = document.getElementById("profile-city-options");
 
@@ -882,15 +881,6 @@ profileForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
   await saveProfileFromProfileModal();
 });
-profileUseCheckoutButton?.addEventListener("click", () => {
-  const profile = collectProfileForm();
-  populateCheckoutProfile(profile);
-  saveProfileLocally(profile);
-  closeProfileModal();
-  openCheckoutModal();
-  showToast("Checkout opened with saved profile");
-});
-
 authCode?.addEventListener("input", () => {
   if (!authCode) return;
   authCode.value = authCode.value.replace(/\D/g, "").slice(0, 6);
