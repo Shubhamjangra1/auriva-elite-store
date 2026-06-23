@@ -853,6 +853,11 @@ document.querySelectorAll('a[href^="#"]').forEach((link) => {
   });
 });
 
+document.querySelector(".brand")?.addEventListener("click", (event) => {
+  event.preventDefault();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
 openCheckoutTriggers.forEach((trigger) => {
   trigger.addEventListener("click", () => {
     openCheckoutModal();
