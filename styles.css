@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   --bg: #f8f5ef;
   --bg-soft: #f2ede4;
   --panel: rgba(255, 255, 255, 0.82);
@@ -92,7 +92,7 @@ button {
   align-items: center;
   min-width: max-content;
   white-space: nowrap;
-  animation: announcement-scroll 28s linear infinite;
+  animation: announcement-scroll 34s linear infinite;
 }
 
 .announcement-group {
@@ -109,7 +109,7 @@ button {
 }
 
 .announcement-group span:not(:last-child)::after {
-  content: "�";
+  content: "•";
   margin-left: 36px;
   color: var(--accent);
 }
@@ -119,7 +119,7 @@ button {
     transform: translateX(0);
   }
   to {
-    transform: translateX(-50%);
+    transform: translateX(-25%);
   }
 }
 
