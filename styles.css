@@ -123,7 +123,6 @@ button {
 }
 
 .site-header,
-.hero-panel,
 .editorial-note,
 .catalog-section,
 .checkout-section,
@@ -253,12 +252,15 @@ button {
 
 .hero-panel {
   margin-top: 18px;
-  border-radius: var(--radius-xl);
-  padding: 26px 28px;
+  padding: 0;
   display: grid;
   grid-template-columns: 1.05fr 0.95fr;
-  gap: 28px;
+  gap: 22px;
   align-items: end;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  backdrop-filter: none;
 }
 
 .eyebrow {
