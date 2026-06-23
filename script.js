@@ -56,6 +56,7 @@ const AUTH_SESSION_KEY = "auriva-elite-auth-session";
 const PROFILE_STORAGE_PREFIX = "auriva-elite-profile:";
 
 let activeModalProductId = null;
+let activeGalleryIndex = 0;
 let toastTimer = null;
 let lastPincodeLookup = "";
 let countryStateCityModule = null;
@@ -844,6 +845,7 @@ function openProductModal(productId) {
   if (!product || !modal) return;
 
   activeModalProductId = product.id;
+  activeGalleryIndex = 0;
   modalBadge.textContent = product.badge;
   modalTitle.textContent = product.name;
   modalTagline.textContent = product.tagline;
@@ -857,22 +859,7 @@ function openProductModal(productId) {
     const galleryImages = product.modalGallerySources.length
       ? product.modalGallerySources
       : [product.imageSrc].filter(Boolean);
-
-    modalGallery.innerHTML = galleryImages
-      .map(
-        (src, index) => `
-          <img
-            class="product-modal-gallery-image"
-            src="${src}"
-            alt="${product.name} product photo ${index + 1}"
-          />
-        `
-      )
-      .join("");
-
-    if (modalGrid) {
-      modalGrid.classList.toggle("has-visual", galleryImages.length > 0);
-    }
+    renderProductGallery(product.name, galleryImages);
   }
 
   modalWhatsappLink.href = buildSingleProductWhatsappUrl(product);
@@ -906,6 +893,68 @@ function closeProductModal() {
     modalGallery.innerHTML = "";
   }
   activeModalProductId = null;
+  activeGalleryIndex = 0;
+}
+
+function renderProductGallery(productName, galleryImages) {
+  if (!modalGallery) return;
+
+  const hasMultipleImages = galleryImages.length > 1;
+  const safeIndex = Math.min(activeGalleryIndex, Math.max(galleryImages.length - 1, 0));
+  activeGalleryIndex = safeIndex;
+
+  modalGallery.innerHTML = `
+    <div class="gallery-frame">
+      <button class="gallery-nav gallery-prev" type="button" aria-label="Previous product image" ${
+        hasMultipleImages ? "" : "disabled"
+      }>&lsaquo;</button>
+      <img
+        class="product-modal-gallery-image"
+        src="${galleryImages[safeIndex] || ""}"
+        alt="${productName} product photo ${safeIndex + 1}"
+      />
+      <button class="gallery-nav gallery-next" type="button" aria-label="Next product image" ${
+        hasMultipleImages ? "" : "disabled"
+      }>&rsaquo;</button>
+    </div>
+    <div class="gallery-thumbs">
+      ${galleryImages
+        .map(
+          (src, index) => `
+            <button
+              class="gallery-thumb ${index === safeIndex ? "is-active" : ""}"
+              type="button"
+              data-gallery-index="${index}"
+              aria-label="Show product image ${index + 1}"
+            >
+              <img src="${src}" alt="" />
+            </button>
+          `
+        )
+        .join("")}
+    </div>
+  `;
+
+  if (modalGrid) {
+    modalGrid.classList.toggle("has-visual", galleryImages.length > 0);
+  }
+}
+
+function showGalleryImageByOffset(offset) {
+  if (!activeModalProductId || !modalGallery) return;
+
+  const product = findProduct(activeModalProductId);
+  if (!product) return;
+
+  const galleryImages = product.modalGallerySources.length
+    ? product.modalGallerySources
+    : [product.imageSrc].filter(Boolean);
+
+  if (galleryImages.length === 0) return;
+
+  activeGalleryIndex =
+    (activeGalleryIndex + offset + galleryImages.length) % galleryImages.length;
+  renderProductGallery(product.name, galleryImages);
 }
 
 function buildCheckoutWhatsappMessage() {
@@ -1052,6 +1101,33 @@ modal?.addEventListener("click", (event) => {
   if (!(target instanceof HTMLElement)) return;
   if (target.dataset.closeModal === "true") {
     closeProductModal();
+  }
+});
+
+modalGallery?.addEventListener("click", (event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLElement)) return;
+
+  const thumbButton = target.closest("[data-gallery-index]");
+  if (thumbButton instanceof HTMLElement) {
+    const index = Number(thumbButton.dataset.galleryIndex || "0");
+    const product = activeModalProductId ? findProduct(activeModalProductId) : null;
+    if (!product) return;
+    const galleryImages = product.modalGallerySources.length
+      ? product.modalGallerySources
+      : [product.imageSrc].filter(Boolean);
+    if (galleryImages.length === 0) return;
+    activeGalleryIndex = Number.isFinite(index) ? Math.max(0, Math.min(index, galleryImages.length - 1)) : 0;
+    renderProductGallery(product.name, galleryImages);
+    return;
+  }
+
+  if (target.closest(".gallery-prev")) {
+    showGalleryImageByOffset(-1);
+  }
+
+  if (target.closest(".gallery-next")) {
+    showGalleryImageByOffset(1);
   }
 });
 
