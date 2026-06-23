@@ -36,6 +36,8 @@ const profilePincodeInput = document.getElementById("profile-pincode-input");
 const profileLandmarkInput = document.getElementById("profile-landmark-input");
 const profileNoteInput = document.getElementById("profile-note-input");
 const profileUseCheckoutButton = document.getElementById("profile-use-checkout-button");
+const profileStateOptions = document.getElementById("profile-state-options");
+const profileCityOptions = document.getElementById("profile-city-options");
 
 const modal = document.getElementById("product-modal");
 const modalCloseButton = document.getElementById("product-modal-close");
@@ -80,7 +82,7 @@ const PROFILE_STORAGE_PREFIX = "auriva-elite-profile:";
 let activeModalProductId = null;
 let activeGalleryIndex = 0;
 let toastTimer = null;
-let lastPincodeLookup = "";
+const lastPincodeLookupByScope = new Map();
 let countryStateCityModule = null;
 let authUser = null;
 let authSessionToken = "";
@@ -190,6 +192,20 @@ function populateStateOptions() {
   customerState.innerHTML = options;
 }
 
+function populateProfileStateOptions() {
+  if (!profileStateOptions) return;
+
+  const dynamicStates = Array.from(stateCodeByName.keys());
+  const stateNames =
+    dynamicStates.length > 0
+      ? dynamicStates.sort((a, b) => a.localeCompare(b))
+      : Object.keys(stateCityMap).sort((a, b) => a.localeCompare(b));
+
+  profileStateOptions.innerHTML = stateNames
+    .map((state) => `<option value="${state}"></option>`)
+    .join("");
+}
+
 function populateCityOptions(stateName, selectElement = customerCity) {
   if (!selectElement) return;
 
@@ -200,6 +216,15 @@ function populateCityOptions(stateName, selectElement = customerCity) {
       .join("");
 
   selectElement.disabled = cities.length === 0;
+}
+
+function populateProfileCityOptions(stateName) {
+  if (!profileCityOptions) return;
+
+  const cities = fullCityMap.get(stateName) || stateCityMap[stateName] || [];
+  profileCityOptions.innerHTML = cities
+    .map((city) => `<option value="${city}"></option>`)
+    .join("");
 }
 
 async function loadFullIndiaLocationData() {
@@ -234,7 +259,9 @@ async function loadFullIndiaLocationData() {
     });
 
     populateStateOptions();
+    populateProfileStateOptions();
     populateCityOptions(customerState?.value || "");
+    populateProfileCityOptions(profileStateInput?.value || "");
 
     if (checkoutFeedback) {
       checkoutFeedback.textContent =
@@ -242,7 +269,9 @@ async function loadFullIndiaLocationData() {
     }
   } catch {
     populateStateOptions();
+    populateProfileStateOptions();
     populateCityOptions(customerState?.value || "");
+    populateProfileCityOptions(profileStateInput?.value || "");
 
     if (checkoutFeedback) {
       checkoutFeedback.textContent =
@@ -265,6 +294,31 @@ function setSelectedValue(selectElement, value) {
   return true;
 }
 
+function setInputValueByMatch(inputElement, value, options = []) {
+  if (!inputElement || !value) return false;
+
+  const normalizedTarget = value.trim().toLowerCase();
+  const matchingValue = options.find((option) => option.trim().toLowerCase() === normalizedTarget);
+
+  if (!matchingValue) {
+    inputElement.value = value;
+    return false;
+  }
+
+  inputElement.value = matchingValue;
+  return true;
+}
+
+function setLocationFieldValue(fieldElement, value, options = []) {
+  if (!fieldElement || !value) return false;
+
+  if (fieldElement.tagName === "SELECT") {
+    return setSelectedValue(fieldElement, value);
+  }
+
+  return setInputValueByMatch(fieldElement, value, options);
+}
+
 function ensureCityOption(cityName, selectElement = customerCity) {
   if (!selectElement || !cityName) return;
 
@@ -280,14 +334,20 @@ function ensureCityOption(cityName, selectElement = customerCity) {
   }
 }
 
-async function lookupPincodeDetails(pincode) {
+async function lookupPincodeDetails(
+  pincode,
+  stateElement = customerState,
+  cityElement = customerCity,
+  feedbackElement = checkoutFeedback,
+  scope = "checkout"
+) {
   if (!/^\d{6}$/.test(pincode)) return;
-  if (pincode === lastPincodeLookup) return;
+  if (pincode === lastPincodeLookupByScope.get(scope)) return;
 
-  lastPincodeLookup = pincode;
+  lastPincodeLookupByScope.set(scope, pincode);
 
-  if (checkoutFeedback) {
-    checkoutFeedback.textContent = "Checking pincode and filling city/state...";
+  if (feedbackElement) {
+    feedbackElement.textContent = "Checking pincode and filling city/state...";
   }
 
   try {
@@ -307,23 +367,31 @@ async function lookupPincodeDetails(pincode) {
     const apiState = firstPostOffice.State?.trim() || "";
     const apiDistrict = firstPostOffice.District?.trim() || "";
 
-    const stateMatched = setSelectedValue(customerState, apiState);
+    const stateOptions = Array.from(stateCodeByName.keys()).length > 0
+      ? Array.from(stateCodeByName.keys())
+      : Object.keys(stateCityMap);
+    const stateMatched = setLocationFieldValue(stateElement, apiState, stateOptions);
     if (stateMatched) {
-      populateCityOptions(customerState.value);
+      populateCityOptions(stateElement.value, cityElement);
     }
 
-    if (customerCity) {
-      ensureCityOption(apiDistrict);
-      customerCity.disabled = false;
-      setSelectedValue(customerCity, apiDistrict);
+    if (cityElement) {
+      const cityOptions = fullCityMap.get(stateElement.value) || stateCityMap[stateElement.value] || [];
+      if (cityElement.tagName === "SELECT") {
+        ensureCityOption(apiDistrict, cityElement);
+        cityElement.disabled = false;
+        setSelectedValue(cityElement, apiDistrict);
+      } else {
+        setLocationFieldValue(cityElement, apiDistrict, cityOptions);
+      }
     }
 
-    if (checkoutFeedback) {
-      checkoutFeedback.textContent = `Auto-filled ${apiDistrict || "city"} and ${apiState || "state"} from pincode.`;
+    if (feedbackElement) {
+      feedbackElement.textContent = `Auto-filled ${apiDistrict || "city"} and ${apiState || "state"} from pincode.`;
     }
   } catch {
-    if (checkoutFeedback) {
-      checkoutFeedback.textContent =
+    if (feedbackElement) {
+      feedbackElement.textContent =
         "Auto-fill could not run right now. You can still select state and city manually.";
     }
   }
@@ -481,15 +549,22 @@ function populateProfileForm(profile) {
   if (profileNoteInput && !profileNoteInput.value.trim()) profileNoteInput.value = profile.note || "";
 
   if (profile.state) {
-    const changed = setSelectedValue(profileStateInput, profile.state);
-    if (changed) {
-      populateCityOptions(profileStateInput.value, profileCityInput);
-    }
+    setLocationFieldValue(
+      profileStateInput,
+      profile.state,
+      Array.from(stateCodeByName.keys()).length > 0
+        ? Array.from(stateCodeByName.keys())
+        : Object.keys(stateCityMap)
+    );
+    populateProfileCityOptions(profileStateInput.value);
   }
 
   if (profile.city) {
-    ensureCityOption(profile.city, profileCityInput);
-    setSelectedValue(profileCityInput, profile.city);
+    setLocationFieldValue(
+      profileCityInput,
+      profile.city,
+      fullCityMap.get(profileStateInput?.value || "") || stateCityMap[profileStateInput?.value || ""] || []
+    );
   }
 
   if (profilePincodeInput && !profilePincodeInput.value.trim()) profilePincodeInput.value = profile.pincode || "";
@@ -1241,7 +1316,33 @@ customerPincode?.addEventListener("input", () => {
     lookupPincodeDetails(cleanedPincode);
   } else if (checkoutFeedback && cleanedPincode.length === 0) {
     checkoutFeedback.textContent = "";
-    lastPincodeLookup = "";
+    lastPincodeLookupByScope.delete("checkout");
+  }
+});
+
+profileStateInput?.addEventListener("input", () => {
+  populateProfileCityOptions(profileStateInput.value);
+});
+
+profileStateInput?.addEventListener("change", () => {
+  populateProfileCityOptions(profileStateInput.value);
+});
+
+profilePincodeInput?.addEventListener("blur", () => {
+  const cleanedPincode = profilePincodeInput.value.replace(/\D/g, "");
+  profilePincodeInput.value = cleanedPincode;
+  lookupPincodeDetails(cleanedPincode, profileStateInput, profileCityInput, profileFeedback, "profile");
+});
+
+profilePincodeInput?.addEventListener("input", () => {
+  const cleanedPincode = profilePincodeInput.value.replace(/\D/g, "").slice(0, 6);
+  profilePincodeInput.value = cleanedPincode;
+
+  if (cleanedPincode.length === 6) {
+    lookupPincodeDetails(cleanedPincode, profileStateInput, profileCityInput, profileFeedback, "profile");
+  } else if (profileFeedback && cleanedPincode.length === 0) {
+    profileFeedback.textContent = "";
+    lastPincodeLookupByScope.delete("profile");
   }
 });
 

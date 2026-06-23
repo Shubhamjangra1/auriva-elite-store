@@ -14,7 +14,7 @@
       href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=amazon6" />
+    <link rel="stylesheet" href="styles.css?v=amazon7" />
   </head>
   <body>
     <div class="announcement-bar" role="status" aria-label="Store updates">
@@ -660,16 +660,26 @@
 
               <label>
                 <span class="field-label">State</span>
-                <select id="profile-state-input" class="text-input">
-                  <option value="">Select state</option>
-                </select>
+                <input
+                  id="profile-state-input"
+                  class="text-input"
+                  type="text"
+                  list="profile-state-options"
+                  placeholder="Search state"
+                  autocomplete="off"
+                />
               </label>
 
               <label>
                 <span class="field-label">City / district</span>
-                <select id="profile-city-input" class="text-input" disabled>
-                  <option value="">Select city</option>
-                </select>
+                <input
+                  id="profile-city-input"
+                  class="text-input"
+                  type="text"
+                  list="profile-city-options"
+                  placeholder="Search city"
+                  autocomplete="off"
+                />
               </label>
 
               <label>
@@ -702,6 +712,9 @@
       </div>
     </div>
 
-    <script type="module" src="script.js?v=amazon6"></script>
+    <datalist id="profile-state-options"></datalist>
+    <datalist id="profile-city-options"></datalist>
+
+    <script type="module" src="script.js?v=amazon7"></script>
   </body>
 </html>
