@@ -51,6 +51,12 @@ const modalInfo = document.getElementById("product-modal-info");
 const modalIncludes = document.getElementById("product-modal-includes");
 const modalHighlights = document.getElementById("product-modal-highlights");
 const modalReviewText = document.getElementById("product-modal-review-text");
+const productReviewForm = document.getElementById("product-review-form");
+const productReviewName = document.getElementById("product-review-name");
+const productReviewText = document.getElementById("product-review-text");
+const productReviewSubmit = document.getElementById("product-review-submit");
+const productReviewCount = document.getElementById("product-review-count");
+const productReviewList = document.getElementById("product-review-list");
 const modalCartButton = document.getElementById("product-modal-cart");
 const modalAmazonLink = document.getElementById("product-modal-amazon");
 
@@ -432,6 +438,116 @@ function saveProfileLocally(profile) {
   } catch {
     // Ignore localStorage issues.
   }
+}
+
+function getReviewStorageKey(productId) {
+  return `auriva-elite-reviews:${productId}`;
+}
+
+function readProductReviews(productId) {
+  if (!productId) return [];
+
+  try {
+    return JSON.parse(localStorage.getItem(getReviewStorageKey(productId)) || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function saveProductReviews(productId, reviews) {
+  if (!productId) return;
+
+  try {
+    localStorage.setItem(getReviewStorageKey(productId), JSON.stringify(reviews));
+  } catch {
+    // Ignore localStorage issues.
+  }
+}
+
+function getDefaultReviewName() {
+  const profile = readSavedProfile(getAuthEmailAddress());
+  if (profile?.name) return profile.name;
+  if (customerName?.value.trim()) return customerName.value.trim();
+  return authUser?.email?.split("@")?.[0] || "Guest";
+}
+
+function formatReviewDate(timestamp) {
+  try {
+    return new Intl.DateTimeFormat("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    }).format(new Date(timestamp));
+  } catch {
+    return "";
+  }
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function renderProductReviews(productId) {
+  if (!productReviewList || !productReviewCount) return;
+
+  const reviews = readProductReviews(productId);
+  productReviewCount.textContent = reviews.length === 1 ? "1 review" : `${reviews.length} reviews`;
+
+  if (reviews.length === 0) {
+    productReviewList.innerHTML =
+      '<p class="empty-state product-review-empty">No reviews yet. Be the first to share one.</p>';
+    return;
+  }
+
+  productReviewList.innerHTML = reviews
+    .slice()
+    .reverse()
+    .map(
+      (review) => `
+        <article class="product-review-item">
+          <div class="product-review-head">
+            <strong>${escapeHtml(review.author)}</strong>
+            <span>${escapeHtml(formatReviewDate(review.timestamp))}</span>
+          </div>
+          <p>${escapeHtml(review.comment)}</p>
+        </article>
+      `
+    )
+    .join("");
+}
+
+function resetProductReviewForm() {
+  if (productReviewName) productReviewName.value = getDefaultReviewName();
+  if (productReviewText) productReviewText.value = "";
+}
+
+function saveProductReview(productId) {
+  if (!productId || !productReviewText) return;
+
+  const author = (productReviewName?.value.trim() || getDefaultReviewName()).slice(0, 60);
+  const comment = productReviewText.value.trim();
+
+  if (comment.length < 8) {
+    showToast("Write a slightly longer review");
+    return;
+  }
+
+  const reviews = readProductReviews(productId);
+  reviews.push({
+    author,
+    comment: comment.slice(0, 800),
+    timestamp: Date.now(),
+  });
+
+  saveProductReviews(productId, reviews);
+  renderProductReviews(productId);
+  resetProductReviewForm();
+  showToast("Review posted");
 }
 
 function collectCheckoutProfile() {
@@ -1090,6 +1206,9 @@ function openProductModal(productId) {
     modalAmazonLink.style.display = product.amazonUrl ? "" : "none";
   }
 
+  renderProductReviews(product.id);
+  resetProductReviewForm();
+
   modal.classList.add("is-open");
   modal.setAttribute("aria-hidden", "false");
   document.body.classList.add("modal-open");
@@ -1157,6 +1276,15 @@ function closeProductModal() {
   }
   if (modalAmazonLink) {
     modalAmazonLink.style.display = "";
+  }
+  if (productReviewList) {
+    productReviewList.innerHTML = "";
+  }
+  if (productReviewCount) {
+    productReviewCount.textContent = "0 reviews";
+  }
+  if (productReviewText) {
+    productReviewText.value = "";
   }
   activeModalProductId = null;
   activeGalleryIndex = 0;
@@ -1388,6 +1516,11 @@ checkoutModal?.addEventListener("click", (event) => {
 });
 
 modalCloseButton?.addEventListener("click", closeProductModal);
+productReviewForm?.addEventListener("submit", (event) => {
+  event.preventDefault();
+  if (!activeModalProductId) return;
+  saveProductReview(activeModalProductId);
+});
 modal?.addEventListener("click", (event) => {
   const target = event.target;
   if (!(target instanceof HTMLElement)) return;

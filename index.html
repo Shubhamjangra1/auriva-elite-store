@@ -14,7 +14,7 @@
       href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=amazon14" />
+    <link rel="stylesheet" href="styles.css?v=amazon15" />
   </head>
   <body>
     <div class="announcement-bar" role="status" aria-label="Store updates">
@@ -474,6 +474,42 @@
               <p id="product-modal-review-text"></p>
             </div>
 
+            <div class="modal-info-block">
+              <h4>Reviews</h4>
+              <div class="product-review-shell">
+                <form id="product-review-form" class="product-review-form">
+                  <label>
+                    <span class="field-label">Your name</span>
+                    <input
+                      id="product-review-name"
+                      class="text-input"
+                      type="text"
+                      placeholder="Enter your name"
+                    />
+                  </label>
+
+                  <label>
+                    <span class="field-label">Your review</span>
+                    <textarea
+                      id="product-review-text"
+                      class="text-input text-area"
+                      rows="4"
+                      placeholder="Share your experience with this product"
+                    ></textarea>
+                  </label>
+
+                  <div class="product-review-actions">
+                    <button id="product-review-submit" class="button button-primary" type="submit">
+                      Post review
+                    </button>
+                    <span id="product-review-count" class="product-review-count">0 reviews</span>
+                  </div>
+                </form>
+
+                <div id="product-review-list" class="product-review-list"></div>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
@@ -726,6 +762,6 @@
     <datalist id="profile-state-options"></datalist>
     <datalist id="profile-city-options"></datalist>
 
-    <script type="module" src="script.js?v=amazon14"></script>
+    <script type="module" src="script.js?v=amazon15"></script>
   </body>
 </html>
