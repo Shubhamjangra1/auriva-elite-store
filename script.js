@@ -81,6 +81,9 @@ const authLogoutButton = document.getElementById("auth-logout-button");
 const AUTH_API_BASE_URL = "https://auriva-elite-auth.auriva-elite-auth.workers.dev";
 const REVIEWS_API_BASE_URL = "https://auriva-elite-reviews-api.auriva-elite-auth.workers.dev";
 const AUTH_SESSION_KEY = "auriva-elite-auth-session";
+const AUTH_ACTIVITY_KEY = "auriva-elite-auth-last-activity";
+const AUTH_IDLE_TIMEOUT_MS = 5 * 60 * 1000;
+const AUTH_HEARTBEAT_THROTTLE_MS = 30 * 1000;
 const PROFILE_STORAGE_PREFIX = "auriva-elite-profile:";
 
 let activeModalProductId = null;
@@ -90,6 +93,8 @@ const lastPincodeLookupByScope = new Map();
 let countryStateCityModule = null;
 let authUser = null;
 let authSessionToken = "";
+let authIdleTimer = null;
+let lastAuthHeartbeatAt = 0;
 const stateCodeByName = new Map();
 const fullCityMap = new Map();
 
@@ -413,6 +418,85 @@ function getProfileStorageKey(email) {
   return `${PROFILE_STORAGE_PREFIX}${email.trim().toLowerCase()}`;
 }
 
+function getStoredAuthActivity() {
+  try {
+    const value = Number(localStorage.getItem(AUTH_ACTIVITY_KEY) || "0");
+    return Number.isFinite(value) && value > 0 ? value : 0;
+  } catch {
+    return 0;
+  }
+}
+
+function saveStoredAuthActivity(timestamp) {
+  try {
+    localStorage.setItem(AUTH_ACTIVITY_KEY, String(timestamp));
+  } catch {
+    // Ignore storage errors.
+  }
+}
+
+function clearStoredAuthActivity() {
+  try {
+    localStorage.removeItem(AUTH_ACTIVITY_KEY);
+  } catch {
+    // Ignore storage errors.
+  }
+}
+
+function clearAuthIdleTimer() {
+  if (authIdleTimer) {
+    window.clearTimeout(authIdleTimer);
+    authIdleTimer = null;
+  }
+}
+
+function handleExpiredAuthSession(message = "Your session expired after 5 minutes of inactivity.") {
+  clearAuthSession();
+  closeCheckoutModal();
+  closeProfileModal();
+  setAuthMessage(message, "error");
+  showToast("Session expired. Please sign in again.");
+}
+
+function scheduleAuthIdleTimeout(now = Date.now()) {
+  clearAuthIdleTimer();
+
+  if (!authUser || !authSessionToken) return;
+
+  const lastActivity = getStoredAuthActivity() || now;
+  const elapsed = now - lastActivity;
+
+  if (elapsed >= AUTH_IDLE_TIMEOUT_MS) {
+    handleExpiredAuthSession();
+    return;
+  }
+
+  authIdleTimer = window.setTimeout(() => {
+    handleExpiredAuthSession();
+  }, AUTH_IDLE_TIMEOUT_MS - elapsed);
+}
+
+async function refreshAuthSessionActivity({ touchServer = true } = {}) {
+  if (!authUser || !authSessionToken) return;
+
+  const now = Date.now();
+  saveStoredAuthActivity(now);
+  scheduleAuthIdleTimeout(now);
+
+  if (!touchServer) return;
+  if (now - lastAuthHeartbeatAt < AUTH_HEARTBEAT_THROTTLE_MS) return;
+
+  lastAuthHeartbeatAt = now;
+
+  try {
+    await fetchAuthJson("/api/auth/heartbeat", { method: "POST" });
+  } catch (error) {
+    if (error?.status === 401) {
+      handleExpiredAuthSession("Your session expired after 5 minutes of inactivity.");
+    }
+  }
+}
+
 function readSavedProfile(email) {
   if (!email) return null;
 
@@ -634,6 +718,8 @@ async function persistCheckoutProfile() {
   } catch {
     // Keep the local copy even if the server update fails.
   }
+
+  await refreshAuthSessionActivity({ touchServer: true });
 }
 
 function updateAuthButton() {
@@ -774,6 +860,8 @@ async function saveProfileFromProfileModal() {
       // Keep the local profile if the server sync is unavailable.
     }
   }
+
+  await refreshAuthSessionActivity({ touchServer: true });
 }
 
 function openAuthModal() {
@@ -824,7 +912,10 @@ function fetchAuthJson(path, options = {}) {
   }).then(async (response) => {
     const data = await response.json().catch(() => ({}));
     if (!response.ok) {
-      throw new Error(data?.error || "Request failed");
+      const error = new Error(data?.error || "Request failed");
+      error.status = response.status;
+      error.data = data;
+      throw error;
     }
     return data;
   });
@@ -833,6 +924,7 @@ function fetchAuthJson(path, options = {}) {
 function saveAuthSession(token, email) {
   authSessionToken = token;
   authUser = { email };
+  lastAuthHeartbeatAt = Date.now();
 
   try {
     localStorage.setItem(AUTH_SESSION_KEY, token);
@@ -840,6 +932,8 @@ function saveAuthSession(token, email) {
     // Ignore storage errors.
   }
 
+  saveStoredAuthActivity(Date.now());
+  scheduleAuthIdleTimeout();
   updateAuthButton();
   updateCheckoutButton();
   updateProfileButton();
@@ -848,6 +942,9 @@ function saveAuthSession(token, email) {
 function clearAuthSession() {
   authSessionToken = "";
   authUser = null;
+  lastAuthHeartbeatAt = 0;
+  clearAuthIdleTimer();
+  clearStoredAuthActivity();
 
   try {
     localStorage.removeItem(AUTH_SESSION_KEY);
@@ -880,6 +977,8 @@ async function restoreAuthSession() {
       populateCheckoutProfile(session.profile);
       saveProfileLocally(session.profile);
     }
+    saveStoredAuthActivity(Date.now());
+    scheduleAuthIdleTimeout();
     updateProfileButton();
   } catch {
     clearAuthSession();
@@ -986,6 +1085,10 @@ async function initializeAuth() {
   }
 }
 
+function handleAuthActivity() {
+  void refreshAuthSessionActivity();
+}
+
 document.querySelectorAll('a[href^="#"]').forEach((link) => {
   link.addEventListener("click", (event) => {
     const targetId = link.getAttribute("href");
@@ -1049,6 +1152,24 @@ authCode?.addEventListener("keydown", (event) => {
     event.preventDefault();
     void verifyLoginCode();
   }
+});
+
+["pointerdown", "keydown", "scroll", "touchstart", "focusin"].forEach((eventName) => {
+  window.addEventListener(eventName, handleAuthActivity, { passive: true, capture: true });
+});
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState !== "visible") return;
+  if (!authUser || !authSessionToken) return;
+
+  const lastActivity = getStoredAuthActivity();
+  if (lastActivity && Date.now() - lastActivity >= AUTH_IDLE_TIMEOUT_MS) {
+    handleExpiredAuthSession();
+    return;
+  }
+
+  saveStoredAuthActivity(Date.now());
+  scheduleAuthIdleTimeout();
 });
 
 authModal?.addEventListener("click", (event) => {

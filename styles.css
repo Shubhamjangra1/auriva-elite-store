@@ -721,12 +721,15 @@ button {
 
 .product-modal-dialog {
   position: relative;
-  width: min(1040px, calc(100% - 28px));
+  width: min(1120px, calc(100% - 28px));
   max-height: calc(100vh - 36px);
   margin: 18px auto;
   border-radius: 28px;
-  padding: 26px;
+  padding: 22px;
   overflow: auto;
+  background: var(--panel-strong);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
 }
 
 .modal-close {
@@ -746,20 +749,24 @@ button {
   display: grid;
   grid-template-columns: 1fr;
   gap: 0;
+  align-items: start;
 }
 
 .product-modal-grid.has-visual {
   grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
-  gap: 18px;
+  gap: 22px;
 }
 
 .product-modal-grid.has-visual .product-modal-visual {
   display: block;
+  position: sticky;
+  top: 0;
+  align-self: start;
 }
 
 .product-modal-gallery {
   display: grid;
-  gap: 14px;
+  gap: 12px;
 }
 
 .gallery-frame {
@@ -1013,14 +1020,20 @@ button {
   line-height: 0.95;
 }
 
+.product-modal-content {
+  display: grid;
+  gap: 10px;
+  padding-top: 2px;
+}
+
 .product-modal-tagline {
-  margin: 0 0 10px;
+  margin: 0;
   color: var(--muted);
   line-height: 1.7;
 }
 
 .product-modal-price {
-  margin-bottom: 18px;
+  margin-bottom: 8px;
   color: #7d664f;
 }
 
@@ -1047,7 +1060,7 @@ button {
 }
 
 .modal-info-block + .modal-info-block {
-  margin-top: 16px;
+  margin-top: 14px;
 }
 
 .modal-info-block h4 {
@@ -1064,13 +1077,14 @@ button {
 
 .product-review-shell {
   display: grid;
-  gap: 14px;
+  gap: 12px;
+  margin-top: 4px;
 }
 
 .product-review-form {
   display: grid;
   gap: 12px;
-  padding: 16px;
+  padding: 14px;
   border-radius: 20px;
   background: rgba(251, 248, 243, 0.88);
   border: 1px solid rgba(109, 91, 69, 0.1);
@@ -1160,7 +1174,7 @@ button {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
-  margin: 6px 0 18px;
+  margin: 2px 0 14px;
 }
 
 .auth-modal {

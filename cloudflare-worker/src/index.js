@@ -72,6 +72,8 @@ async function readJson(request) {
   }
 }
 
+const SESSION_IDLE_TIMEOUT_SECONDS = 5 * 60;
+
 async function sendLoginEmail(env, email, code) {
   const from = env.AUTH_EMAIL_FROM;
   const resendKey = env.RESEND_API_KEY;
@@ -137,6 +139,26 @@ async function storeProfile(env, email, profile) {
 
   await env.PROFILES.put(profileKey, JSON.stringify(payload));
   return payload;
+}
+
+async function storeSession(env, token, email, session = {}) {
+  const now = new Date().toISOString();
+  const payload = {
+    email,
+    createdAt: session.createdAt || now,
+    lastActivityAt: now,
+  };
+
+  await env.SESSIONS.put(`session:${token}`, JSON.stringify(payload), {
+    expirationTtl: SESSION_IDLE_TIMEOUT_SECONDS,
+  });
+
+  return payload;
+}
+
+async function touchSession(env, token, session) {
+  if (!session?.email) return null;
+  return storeSession(env, token, session.email, session);
 }
 
 async function getSession(env, token) {
@@ -248,16 +270,7 @@ export default {
       await env.OTP_CODES.delete(`otp:${email}`);
 
       const sessionToken = randomHex(32);
-      const ttl = Number(env.SESSION_TTL_SECONDS || 2592000);
-
-      await env.SESSIONS.put(
-        `session:${sessionToken}`,
-        JSON.stringify({
-          email,
-          createdAt: new Date().toISOString(),
-        }),
-        { expirationTtl: ttl }
-      );
+      await storeSession(env, sessionToken, email);
 
       const profile = await loadProfile(env, email);
 
@@ -280,6 +293,7 @@ export default {
       }
 
       const profile = await loadProfile(env, auth.session.email);
+      await touchSession(env, auth.token, auth.session);
       return jsonResponse(
         {
           ok: true,
@@ -289,6 +303,16 @@ export default {
         200,
         origin
       );
+    }
+
+    if (url.pathname === "/api/auth/heartbeat" && request.method === "POST") {
+      const auth = await requireAuth(request, env);
+      if (!auth) {
+        return jsonResponse({ error: "Not signed in." }, 401, origin);
+      }
+
+      await touchSession(env, auth.token, auth.session);
+      return jsonResponse({ ok: true, email: auth.session.email }, 200, origin);
     }
 
     if (url.pathname === "/api/profile" && request.method === "PUT") {
@@ -310,6 +334,7 @@ export default {
       }
 
       await storeProfile(env, email, profile);
+      await touchSession(env, auth.token, auth.session);
       return jsonResponse({ ok: true }, 200, origin);
     }
 
