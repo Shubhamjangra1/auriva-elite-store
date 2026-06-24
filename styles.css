@@ -423,32 +423,101 @@ button {
   font-weight: 600;
 }
 
-#checkout-address-select {
+.checkout-address-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.checkout-address-empty {
+  margin: 0;
+  padding: 14px 16px;
+}
+
+.checkout-address-card {
+  position: relative;
+  overflow: hidden;
   appearance: none;
   -webkit-appearance: none;
-  padding-right: 48px;
-  background-image:
-    linear-gradient(45deg, transparent 50%, #9b846a 50%),
-    linear-gradient(135deg, #9b846a 50%, transparent 50%),
-    linear-gradient(to right, rgba(109, 91, 69, 0.08), rgba(109, 91, 69, 0.08));
-  background-position:
-    calc(100% - 24px) 50%,
-    calc(100% - 18px) 50%,
-    calc(100% - 48px) 50%;
-  background-size: 6px 6px, 6px 6px, 1px 24px;
-  background-repeat: no-repeat;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
-  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease, background-color 0.18s ease;
+  color: var(--text);
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  text-align: left;
+  padding: 14px 16px 14px 18px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255, 253, 249, 0.96), rgba(248, 242, 234, 0.9));
+  border: 1px solid rgba(109, 91, 69, 0.1);
+  box-shadow: 0 10px 24px rgba(109, 91, 69, 0.04);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
 }
 
-#checkout-address-select:hover {
-  border-color: rgba(155, 132, 106, 0.24);
-  background-color: rgba(255, 255, 255, 0.94);
+.checkout-address-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(212, 182, 143, 0.24);
+  box-shadow: 0 14px 28px rgba(109, 91, 69, 0.06);
 }
 
-#checkout-address-select:focus {
-  border-color: rgba(155, 132, 106, 0.32);
-  box-shadow: 0 0 0 4px rgba(203, 176, 143, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.65);
+.checkout-address-card:focus-visible {
+  outline: none;
+  border-color: rgba(155, 132, 106, 0.34);
+  box-shadow: 0 0 0 4px rgba(203, 176, 143, 0.14), 0 14px 28px rgba(109, 91, 69, 0.06);
+}
+
+.checkout-address-card.is-selected {
+  background: linear-gradient(180deg, rgba(255, 249, 241, 0.98), rgba(239, 229, 216, 0.94));
+  border-color: rgba(212, 182, 143, 0.34);
+  box-shadow: 0 16px 34px rgba(109, 91, 69, 0.1);
+  transform: translateY(-1px);
+}
+
+.checkout-address-card.is-selected::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: linear-gradient(180deg, rgba(212, 182, 143, 0.95), rgba(160, 126, 86, 0.72));
+}
+
+.checkout-address-card.is-default .checkout-address-card-badge {
+  background: rgba(160, 126, 86, 0.18);
+  color: #7d623f;
+}
+
+.checkout-address-card-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.checkout-address-card-head strong {
+  font-size: 0.98rem;
+}
+
+.checkout-address-card-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 0 9px;
+  border-radius: 999px;
+  background: rgba(212, 182, 143, 0.16);
+  color: #8c714f;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.checkout-address-card-name,
+.checkout-address-card-details {
+  display: block;
+  color: #594434;
+  line-height: 1.55;
+}
+
+.checkout-address-card-name {
+  font-weight: 600;
 }
 
 .hero-text {

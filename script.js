@@ -16,9 +16,9 @@ const checkoutAddressHint = document.getElementById("checkout-address-hint");
 const checkoutAddressSummary = document.getElementById("checkout-address-summary");
 const checkoutAddressSummaryLabel = document.getElementById("checkout-address-summary-label");
 const checkoutAddressSummaryText = document.getElementById("checkout-address-summary-text");
+const checkoutAddressList = document.getElementById("checkout-address-list");
 const checkoutModal = document.getElementById("checkout-modal");
 const checkoutModalCloseButton = document.getElementById("checkout-modal-close");
-const checkoutAddressSelect = document.getElementById("checkout-address-select");
 const toast = document.getElementById("toast");
 const openCheckoutTriggers = Array.from(document.querySelectorAll("[data-open-checkout]"));
 const profileButton = document.getElementById("profile-button");
@@ -254,40 +254,54 @@ function populateProfileCityOptions(stateName) {
 }
 
 function renderCheckoutAddressOptions(profile, selectedId = "") {
-  if (!checkoutAddressSelect) return;
+  if (!checkoutAddressList) return;
 
   const normalized = normalizeSavedProfile(profile);
   const addresses = normalized?.addresses || [];
 
   if (addresses.length === 0) {
-    checkoutAddressSelect.innerHTML = '<option value="">Choose from saved addresses</option>';
-    checkoutAddressSelect.disabled = true;
+    checkoutAddressList.innerHTML =
+      '<p class="empty-state checkout-address-empty">No saved addresses yet. Add one in your profile first.</p>';
     if (checkoutAddressSummary) checkoutAddressSummary.hidden = true;
     if (checkoutAddressHint) {
       checkoutAddressHint.textContent = "Your default saved address will be used automatically.";
     }
+    activeCheckoutAddressId = "";
     return;
   }
-
-  checkoutAddressSelect.disabled = false;
-  checkoutAddressSelect.innerHTML = [
-    '<option value="">Choose from saved addresses</option>',
-    ...addresses.map(
-      (address) =>
-        `<option value="${escapeHtml(address.id)}">${escapeHtml(formatSavedAddressLabel(address))}</option>`
-    ),
-  ].join("");
 
   const nextSelectedId = selectedId && addresses.some((address) => address.id === selectedId)
     ? selectedId
     : normalized.defaultAddressId || addresses[0].id;
 
-  checkoutAddressSelect.value = nextSelectedId || "";
-  activeCheckoutAddressId = checkoutAddressSelect.value || nextSelectedId || "";
+  const selectedAddress = addresses.find((address) => address.id === nextSelectedId) || addresses[0];
+  const defaultAddress = addresses.find((address) => address.id === normalized.defaultAddressId) || addresses[0];
+  activeCheckoutAddressId = selectedAddress?.id || "";
+
+  checkoutAddressList.innerHTML = addresses
+    .map((address) => {
+      const isSelected = address.id === activeCheckoutAddressId;
+      const isDefault = address.id === normalized.defaultAddressId;
+      const details = [address.address, address.city, address.state, address.pincode].filter(Boolean).join(" · ");
+      return `
+        <button
+          type="button"
+          class="checkout-address-card ${isSelected ? "is-selected" : ""} ${isDefault ? "is-default" : ""}"
+          data-checkout-address="${escapeHtml(address.id)}"
+          aria-pressed="${isSelected ? "true" : "false"}"
+        >
+          <span class="checkout-address-card-head">
+            <strong>${escapeHtml(address.label || "Saved address")}</strong>
+            ${isDefault ? '<span class="checkout-address-card-badge">Default</span>' : ''}
+          </span>
+          <span class="checkout-address-card-name">${escapeHtml(address.name || "")}</span>
+          <span class="checkout-address-card-details">${escapeHtml(details)}</span>
+        </button>
+      `;
+    })
+    .join("");
 
   if (checkoutAddressHint) {
-    const selectedAddress = addresses.find((address) => address.id === checkoutAddressSelect.value) || addresses[0];
-    const defaultAddress = addresses.find((address) => address.id === normalized.defaultAddressId) || addresses[0];
     if (selectedAddress && defaultAddress && selectedAddress.id === defaultAddress.id) {
       checkoutAddressHint.textContent = `Using default: ${formatSavedAddressLabel(selectedAddress)}.`;
     } else if (selectedAddress) {
@@ -299,20 +313,13 @@ function renderCheckoutAddressOptions(profile, selectedId = "") {
 
   if (checkoutAddressSummary) {
     checkoutAddressSummary.hidden = false;
+    checkoutAddressSummary.classList.toggle("is-active", selectedAddress.id !== defaultAddress.id);
   }
-
-  if (checkoutAddressSummaryText || checkoutAddressSummaryLabel) {
-    const selectedAddress = addresses.find((address) => address.id === checkoutAddressSelect.value) || addresses[0];
-    const isDefault = Boolean(selectedAddress && selectedAddress.id === normalized.defaultAddressId);
-    checkoutAddressSummary.classList.toggle("is-active", !isDefault);
-    if (checkoutAddressSummaryLabel) {
-      checkoutAddressSummaryLabel.textContent = isDefault ? "Default" : "Selected";
-    }
-    if (checkoutAddressSummaryText) {
-      checkoutAddressSummaryText.textContent = selectedAddress
-        ? formatSavedAddressLabel(selectedAddress)
-        : "Choose a saved address";
-    }
+  if (checkoutAddressSummaryLabel) {
+    checkoutAddressSummaryLabel.textContent = selectedAddress.id === defaultAddress.id ? "Default" : "Selected";
+  }
+  if (checkoutAddressSummaryText) {
+    checkoutAddressSummaryText.textContent = formatSavedAddressLabel(selectedAddress);
   }
 }
 
@@ -2421,19 +2428,21 @@ checkoutForm?.addEventListener("input", () => {
   }
 });
 
-checkoutAddressSelect?.addEventListener("change", () => {
-  if (!authUser) return;
+checkoutAddressList?.addEventListener("click", (event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLElement) || !authUser) return;
+
+  const card = target.closest("[data-checkout-address]");
+  if (!(card instanceof HTMLElement)) return;
+
+  const addressId = card.dataset.checkoutAddress || "";
+  if (!addressId) return;
 
   const profile = normalizeSavedProfile(readSavedProfile(getAuthEmailAddress()));
-  if (!profile?.addresses?.length) return;
-
-  const selectedAddress =
-    profile.addresses.find((address) => address.id === checkoutAddressSelect.value) ||
-    getDefaultSavedAddress(profile);
-
+  const selectedAddress = profile?.addresses?.find((address) => address.id === addressId);
   if (!selectedAddress) return;
 
-  activeCheckoutAddressId = selectedAddress.id;
+  renderCheckoutAddressOptions(profile, selectedAddress.id);
   populateCheckoutFromAddress(selectedAddress, { replace: true });
 
   if (checkoutFeedback) {
@@ -2441,17 +2450,6 @@ checkoutAddressSelect?.addEventListener("change", () => {
   }
   if (checkoutAddressHint) {
     checkoutAddressHint.textContent = `Using saved address: ${formatSavedAddressLabel(selectedAddress)}.`;
-  }
-  if (checkoutAddressSummary) {
-    checkoutAddressSummary.hidden = false;
-    checkoutAddressSummary.classList.toggle("is-active", selectedAddress.id !== getDefaultSavedAddress(profile)?.id);
-  }
-  if (checkoutAddressSummaryLabel) {
-    checkoutAddressSummaryLabel.textContent =
-      selectedAddress.id === getDefaultSavedAddress(profile)?.id ? "Default" : "Selected";
-  }
-  if (checkoutAddressSummaryText) {
-    checkoutAddressSummaryText.textContent = formatSavedAddressLabel(selectedAddress);
   }
 });
 
