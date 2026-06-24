@@ -53,6 +53,9 @@ const modalHighlights = document.getElementById("product-modal-highlights");
 const productReviewForm = document.getElementById("product-review-form");
 const productReviewName = document.getElementById("product-review-name");
 const productReviewText = document.getElementById("product-review-text");
+const productReviewRatingInputs = Array.from(
+  document.querySelectorAll('input[name="product-review-rating"]')
+);
 const productReviewSubmit = document.getElementById("product-review-submit");
 const productReviewCount = document.getElementById("product-review-count");
 const productReviewList = document.getElementById("product-review-list");
@@ -549,7 +552,32 @@ async function fetchProductReviews(productId) {
   return Array.isArray(data?.reviews) ? data.reviews : [];
 }
 
-async function postProductReview(productId, author, comment) {
+function getSelectedReviewRating() {
+  const selected = productReviewForm?.querySelector('input[name="product-review-rating"]:checked');
+  const rating = Number(selected?.value || 5);
+  return Number.isInteger(rating) && rating >= 1 && rating <= 5 ? rating : 5;
+}
+
+function renderReviewStars(rating) {
+  const value = Math.max(1, Math.min(5, Number(rating) || 5));
+  return "\u2605\u2605\u2605\u2605\u2605"
+    .split("")
+    .map((star, index) => `<span class="${index < value ? "star-filled" : "star-muted"}">${star}</span>`)
+    .join("");
+}
+
+function formatReviewSummary(reviews) {
+  if (!Array.isArray(reviews) || reviews.length === 0) {
+    return "0 reviews";
+  }
+
+  const total = reviews.reduce((sum, review) => sum + (Number(review.rating) || 5), 0);
+  const average = total / reviews.length;
+  const label = reviews.length === 1 ? "review" : "reviews";
+  return `${average.toFixed(1)} \u2605 · ${reviews.length} ${label}`;
+}
+
+async function postProductReview(productId, author, comment, rating) {
   if (!productId) return null;
 
   return fetchReviewJson("/reviews", {
@@ -558,6 +586,7 @@ async function postProductReview(productId, author, comment) {
       productId,
       author,
       comment,
+      rating,
     }),
   });
 }
@@ -606,7 +635,7 @@ async function renderProductReviews(productId) {
 
   if (activeModalProductId !== productId) return;
 
-  productReviewCount.textContent = reviews.length === 1 ? "1 review" : `${reviews.length} reviews`;
+  productReviewCount.textContent = formatReviewSummary(reviews);
 
   if (reviews.length === 0) {
     productReviewList.innerHTML =
@@ -620,6 +649,9 @@ async function renderProductReviews(productId) {
     .map(
       (review) => `
         <article class="product-review-item">
+          <div class="product-review-stars" aria-label="${Number(review.rating) || 5} out of 5 stars">
+            ${renderReviewStars(review.rating)}
+          </div>
           <div class="product-review-head">
             <strong>${escapeHtml(review.author)}</strong>
             <span>${escapeHtml(formatReviewDate(review.timestamp))}</span>
@@ -634,6 +666,10 @@ async function renderProductReviews(productId) {
 function resetProductReviewForm() {
   if (productReviewName) productReviewName.value = getDefaultReviewName();
   if (productReviewText) productReviewText.value = "";
+  if (productReviewRatingInputs.length) {
+    const defaultRating = productReviewRatingInputs.find((input) => input.value === "5");
+    if (defaultRating) defaultRating.checked = true;
+  }
 }
 
 async function saveProductReview(productId) {
@@ -641,6 +677,7 @@ async function saveProductReview(productId) {
 
   const author = (productReviewName?.value.trim() || getDefaultReviewName()).slice(0, 60);
   const comment = productReviewText.value.trim();
+  const rating = getSelectedReviewRating();
 
   if (comment.length < 8) {
     showToast("Write a slightly longer review");
@@ -653,7 +690,7 @@ async function saveProductReview(productId) {
   }
 
   try {
-    await postProductReview(productId, author, comment.slice(0, 800));
+    await postProductReview(productId, author, comment.slice(0, 800), rating);
     await renderProductReviews(productId);
   } catch (error) {
     showToast(error?.message || "Could not post your review");
