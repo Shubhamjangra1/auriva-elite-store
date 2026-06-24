@@ -358,6 +358,38 @@ button {
   font-size: 0.86rem;
 }
 
+.checkout-address-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  margin-bottom: 10px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 252, 247, 0.98), rgba(244, 234, 222, 0.88));
+  border: 1px solid rgba(212, 182, 143, 0.22);
+  box-shadow: 0 10px 24px rgba(109, 91, 69, 0.05);
+}
+
+.checkout-address-summary-label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 0 9px;
+  border-radius: 999px;
+  background: rgba(212, 182, 143, 0.16);
+  color: #8c714f;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.checkout-address-summary-text {
+  color: #594434;
+  font-weight: 600;
+}
+
 .hero-text {
   max-width: 56ch;
   margin: 18px 0 0;
