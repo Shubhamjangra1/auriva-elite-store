@@ -1324,7 +1324,7 @@ function renderCart() {
     row.innerHTML = `
       <div class="cart-item-main">
         <div class="cart-item-thumb">
-          <img src="${item.imageSrc}" alt="${item.name}" />
+          <img src="${item.imageSrc}" alt="${item.name}" loading="lazy" decoding="async" />
         </div>
         <div class="cart-item-copy">
           <div class="cart-item-name">${item.name}</div>
@@ -1503,6 +1503,7 @@ function renderProductGallery(productName, galleryImages) {
         class="product-modal-gallery-image"
         src="${galleryImages[safeIndex] || ""}"
         alt="${productName} product photo ${safeIndex + 1}"
+        decoding="async"
       />
       <button class="gallery-nav gallery-next" type="button" aria-label="Next product image" ${
         hasMultipleImages ? "" : "disabled"
@@ -1518,7 +1519,7 @@ function renderProductGallery(productName, galleryImages) {
               data-gallery-index="${index}"
               aria-label="Show product image ${index + 1}"
             >
-              <img src="${src}" alt="" />
+              <img src="${src}" alt="" loading="lazy" decoding="async" />
             </button>
           `
         )
