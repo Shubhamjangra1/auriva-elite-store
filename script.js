@@ -59,6 +59,7 @@ const productReviewRatingInputs = Array.from(
 const productReviewSubmit = document.getElementById("product-review-submit");
 const productReviewCount = document.getElementById("product-review-count");
 const productReviewAuthNote = document.getElementById("product-review-auth-note");
+const productReviewSigninButton = document.getElementById("product-review-signin");
 const productReviewList = document.getElementById("product-review-list");
 const modalCartButton = document.getElementById("product-modal-cart");
 const modalAmazonLink = document.getElementById("product-modal-amazon");
@@ -707,6 +708,10 @@ function updateReviewFormAccess() {
   if (productReviewAuthNote) {
     productReviewAuthNote.hidden = signedIn;
   }
+
+  if (productReviewSigninButton) {
+    productReviewSigninButton.hidden = signedIn;
+  }
 }
 
 async function saveProductReview(productId) {
@@ -1216,6 +1221,9 @@ authModalCloseButton?.addEventListener("click", closeAuthModal);
 authSendButton?.addEventListener("click", requestLoginCode);
 authVerifyButton?.addEventListener("click", verifyLoginCode);
 authLogoutButton?.addEventListener("click", logoutUser);
+productReviewSigninButton?.addEventListener("click", () => {
+  openAuthModal();
+});
 profileModalCloseButton?.addEventListener("click", closeProfileModal);
 profileForm?.addEventListener("submit", async (event) => {
   event.preventDefault();

@@ -1239,14 +1239,29 @@ button {
 }
 
 .product-review-auth-note {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   margin: -2px 0 0;
-  padding: 11px 14px;
+  padding: 12px 14px;
   border-radius: 16px;
   background: rgba(245, 235, 223, 0.72);
   border: 1px solid rgba(155, 132, 106, 0.12);
   color: rgba(84, 67, 49, 0.78);
   font-size: 0.9rem;
   line-height: 1.5;
+}
+
+.button.button-small {
+  min-height: 36px;
+  padding: 0 14px;
+  font-size: 0.86rem;
+  border-radius: 999px;
+}
+
+.product-review-auth-note span {
+  min-width: 0;
 }
 
 .product-review-form[aria-disabled="true"] {
