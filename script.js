@@ -1,4 +1,4 @@
-const cartKey = "auriva-elite-cart";
+const legacyCartKey = "auriva-elite-cart";
 const whatsappNumber = "919050753534";
 
 const productCards = Array.from(document.querySelectorAll(".product-card"));
@@ -601,6 +601,45 @@ function getAuthEmailAddress() {
 
 function getProfileStorageKey(email) {
   return `${PROFILE_STORAGE_PREFIX}${email.trim().toLowerCase()}`;
+}
+
+function getGuestCartStorageKey() {
+  return legacyCartKey;
+}
+
+function getSignedInCartStorageKey(email = getAuthEmailAddress()) {
+  if (!email) return getGuestCartStorageKey();
+  return `${legacyCartKey}:user:${email.trim().toLowerCase()}`;
+}
+
+function getCartStorageKey(email = getAuthEmailAddress()) {
+  return email ? getSignedInCartStorageKey(email) : getGuestCartStorageKey();
+}
+
+function readCartFromStorage(storageKey) {
+  try {
+    return JSON.parse(localStorage.getItem(storageKey) || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function writeCartToStorage(storageKey, cart) {
+  localStorage.setItem(storageKey, JSON.stringify(cart));
+}
+
+function ensureSignedInCartSnapshot() {
+  const email = getAuthEmailAddress();
+  if (!email) return;
+
+  const signedInKey = getSignedInCartStorageKey(email);
+  const signedInCart = readCartFromStorage(signedInKey);
+  if (signedInCart.length > 0) return;
+
+  const legacyCart = readCartFromStorage(getGuestCartStorageKey());
+  if (legacyCart.length > 0) {
+    writeCartToStorage(signedInKey, legacyCart);
+  }
 }
 
 function createAddressId() {
@@ -1551,6 +1590,7 @@ function saveAuthSession(token, email) {
   authSessionToken = token;
   authUser = { email };
   lastAuthHeartbeatAt = Date.now();
+  ensureSignedInCartSnapshot();
 
   try {
     localStorage.setItem(AUTH_SESSION_KEY, token);
@@ -1564,6 +1604,7 @@ function saveAuthSession(token, email) {
   updateCheckoutButton();
   updateProfileButton();
   updateReviewFormAccess();
+  renderCart();
 }
 
 function clearAuthSession() {
@@ -1588,6 +1629,7 @@ function clearAuthSession() {
   updateReviewFormAccess();
   renderCheckoutAddressOptions(null, "");
   updateProfileSummary(null);
+  renderCart();
 
   if (customerName) customerName.value = "";
   if (customerPhone) customerPhone.value = "";
@@ -1624,6 +1666,7 @@ async function restoreAuthSession() {
   try {
     const session = await fetchAuthJson("/api/auth/me");
     authUser = { email: session.email };
+    ensureSignedInCartSnapshot();
     if (session.profile) {
       populateCheckoutProfile(session.profile, { replace: true });
       saveProfileLocally(session.profile);
@@ -1632,6 +1675,7 @@ async function restoreAuthSession() {
     scheduleAuthIdleTimeout();
     updateProfileButton();
     updateReviewFormAccess();
+    renderCart();
   } catch {
     clearAuthSession();
   }
@@ -1958,15 +2002,11 @@ productCards.forEach((card) => {
 });
 
 function getCart() {
-  try {
-    return JSON.parse(localStorage.getItem(cartKey) || "[]");
-  } catch {
-    return [];
-  }
+  return readCartFromStorage(getCartStorageKey());
 }
 
 function saveCart(cart) {
-  localStorage.setItem(cartKey, JSON.stringify(cart));
+  writeCartToStorage(getCartStorageKey(), cart);
 }
 
 function findProduct(productId) {
