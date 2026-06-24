@@ -1551,6 +1551,18 @@ body.modal-open {
     border-radius: 22px;
   }
 
+  .checkout-layout-modal {
+    gap: 12px;
+  }
+
+  .cart-panel,
+  .checkout-form,
+  .profile-summary,
+  .profile-form,
+  .auth-modal-dialog {
+    padding: 16px;
+  }
+
   .product-modal-gallery {
     grid-template-columns: 1fr;
   }
@@ -1564,7 +1576,34 @@ body.modal-open {
   }
 
   .auth-modal-dialog {
-    padding: 20px;
+    width: min(100% - 16px, 760px);
+    margin: 12px auto;
+  }
+
+  .profile-modal-dialog {
+    width: min(100% - 16px, 1080px);
+    margin: 12px auto;
+    padding: 18px;
+  }
+
+  .profile-layout {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .profile-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-actions,
+  .auth-actions {
+    gap: 10px;
+  }
+
+  .profile-actions .button,
+  .auth-actions .button {
+    width: 100%;
+    justify-content: center;
   }
 
   .checkout-modal-heading h2 {
