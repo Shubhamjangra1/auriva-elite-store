@@ -22,6 +22,7 @@ const profileModal = document.getElementById("profile-modal");
 const profileModalCloseButton = document.getElementById("profile-modal-close");
 const profileForm = document.getElementById("profile-form");
 const profileFeedback = document.getElementById("profile-feedback");
+const profileCancelEditButton = document.getElementById("profile-cancel-edit-button");
 const profileSaveButton = document.getElementById("profile-save-button");
 const profileEmail = document.getElementById("profile-email");
 const profilePhone = document.getElementById("profile-phone");
@@ -1233,14 +1234,22 @@ function clearProfileAddressForm() {
   if (profilePincodeInput) profilePincodeInput.value = "";
   if (profileLandmarkInput) profileLandmarkInput.value = "";
   if (profileDefaultAddress) profileDefaultAddress.checked = true;
+  editingProfileAddressId = "";
+  updateProfileAddressFormMode();
 }
 
-function setProfileAddressFormMode(mode = "add") {
-  editingProfileAddressId = mode === "edit" ? editingProfileAddressId : "";
-
+function updateProfileAddressFormMode() {
   if (profileSaveButton) {
     profileSaveButton.textContent = editingProfileAddressId ? "Update address" : "Save address";
   }
+  if (profileCancelEditButton) {
+    profileCancelEditButton.hidden = !editingProfileAddressId;
+  }
+}
+
+function cancelProfileAddressEdit() {
+  clearProfileAddressForm();
+  setProfileMessage("Edit cancelled.", "neutral");
 }
 
 function beginEditingProfileAddress(addressId) {
@@ -1256,7 +1265,7 @@ function beginEditingProfileAddress(addressId) {
   editingProfileAddressId = address.id;
   populateProfileForm(address, { replace: true });
   if (profileDefaultAddress) profileDefaultAddress.checked = address.id === profile.defaultAddressId;
-  if (profileSaveButton) profileSaveButton.textContent = "Update address";
+  updateProfileAddressFormMode();
   setProfileMessage("Editing a saved address. Save when you're done.", "neutral");
   profileModal?.classList.add("is-open");
   profileModal?.setAttribute("aria-hidden", "false");
@@ -1301,6 +1310,7 @@ function openProfileModal() {
     profileDefaultAddress.checked = true;
   }
   setProfileMessage("These are the details saved to your account.", "neutral");
+  updateProfileAddressFormMode();
 
   if (!profileModal) return;
   profileModal.classList.add("is-open");
@@ -1407,8 +1417,6 @@ async function saveProfileFromProfileModal() {
   activeCheckoutAddressId = defaultAddressId;
 
   clearProfileAddressForm();
-  editingProfileAddressId = "";
-  if (profileSaveButton) profileSaveButton.textContent = "Save address";
 
   setProfileMessage(existingIndex >= 0 ? "Address updated." : "Address saved. You can add another or keep this one as default.", "success");
   showToast(existingIndex >= 0 ? "Address updated" : "Address saved");
@@ -1727,6 +1735,9 @@ productReviewSigninButton?.addEventListener("click", () => {
   openAuthModal();
 });
 profileModalCloseButton?.addEventListener("click", closeProfileModal);
+profileCancelEditButton?.addEventListener("click", () => {
+  cancelProfileAddressEdit();
+});
 profileForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
   await saveProfileFromProfileModal();
