@@ -567,6 +567,13 @@
               </label>
 
               <label class="field-span-2">
+                <span class="field-label">Saved address</span>
+                <select id="checkout-address-select" class="text-input" disabled>
+                  <option value="">Choose from saved addresses</option>
+                </select>
+              </label>
+
+              <label class="field-span-2">
                 <span class="field-label">Address line</span>
                 <input id="customer-address" class="text-input" type="text" placeholder="House no, street, area" />
               </label>
@@ -703,6 +710,17 @@
               <div><span>State</span><strong id="profile-state">-</strong></div>
               <div><span>Pincode</span><strong id="profile-pincode">-</strong></div>
             </div>
+
+            <div class="profile-address-book">
+              <div class="profile-address-book-head">
+                <div>
+                  <h4>Saved addresses</h4>
+                  <p>Choose a default address and keep adding more whenever you need.</p>
+                </div>
+                <span id="profile-address-count">0 saved</span>
+              </div>
+              <div id="profile-address-list" class="profile-address-list"></div>
+            </div>
           </div>
 
           <form class="profile-form" id="profile-form">
@@ -758,9 +776,14 @@
 
             </div>
 
+            <label class="profile-default-toggle">
+              <input id="profile-default-address" type="checkbox" checked />
+              <span>Set this address as default for checkout</span>
+            </label>
+
             <div class="profile-actions">
               <button id="profile-save-button" class="button button-primary" type="submit">
-                Save profile
+                Save address
               </button>
             </div>
             <p id="profile-feedback" class="feedback-text" aria-live="polite"></p>

@@ -1131,9 +1131,134 @@ button {
   grid-column: 1 / -1;
 }
 
+.profile-address-book {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(109, 91, 69, 0.1);
+  display: grid;
+  gap: 12px;
+}
+
+.profile-address-book-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.profile-address-book-head h4 {
+  margin: 0;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.profile-address-book-head p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.profile-address-count {
+  color: #9b846a;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.profile-address-list {
+  display: grid;
+  gap: 12px;
+}
+
+.profile-address-empty {
+  margin: 0;
+  padding: 14px 16px;
+}
+
+.profile-address-card {
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(251, 248, 243, 0.88);
+  border: 1px solid rgba(109, 91, 69, 0.08);
+  display: grid;
+  gap: 8px;
+}
+
+.profile-address-card.is-default {
+  background: linear-gradient(180deg, rgba(255, 253, 249, 0.92), rgba(245, 236, 226, 0.8));
+  border-color: rgba(212, 182, 143, 0.32);
+  box-shadow: 0 10px 24px rgba(109, 91, 69, 0.05);
+}
+
+.profile-address-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.profile-address-card-head strong {
+  display: inline-block;
+  margin-right: 8px;
+  font-size: 0.98rem;
+}
+
+.profile-default-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 0 9px;
+  border-radius: 999px;
+  background: rgba(212, 182, 143, 0.18);
+  color: #8c714f;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.profile-address-card-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.profile-address-card p {
+  margin: 0;
+  color: var(--text);
+  line-height: 1.55;
+}
+
 .profile-form {
   display: grid;
   gap: 14px;
+}
+
+.profile-default-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(245, 235, 223, 0.72);
+  border: 1px solid rgba(155, 132, 106, 0.12);
+  color: rgba(84, 67, 49, 0.88);
+  line-height: 1.5;
+}
+
+.profile-default-toggle input {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  accent-color: var(--gold-dark);
+}
+
+.profile-form-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
 }
 
 .profile-actions {
@@ -1811,6 +1936,16 @@ body.modal-open {
 
   .profile-summary-grid {
     grid-template-columns: 1fr;
+  }
+
+  .profile-address-book-head,
+  .profile-address-card-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .profile-address-card-actions {
+    justify-content: flex-start;
   }
 
   .profile-actions,

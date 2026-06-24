@@ -14,6 +14,7 @@ const checkoutButton = document.getElementById("checkout-button");
 const checkoutFeedback = document.getElementById("checkout-feedback");
 const checkoutModal = document.getElementById("checkout-modal");
 const checkoutModalCloseButton = document.getElementById("checkout-modal-close");
+const checkoutAddressSelect = document.getElementById("checkout-address-select");
 const toast = document.getElementById("toast");
 const openCheckoutTriggers = Array.from(document.querySelectorAll("[data-open-checkout]"));
 const profileButton = document.getElementById("profile-button");
@@ -21,12 +22,16 @@ const profileModal = document.getElementById("profile-modal");
 const profileModalCloseButton = document.getElementById("profile-modal-close");
 const profileForm = document.getElementById("profile-form");
 const profileFeedback = document.getElementById("profile-feedback");
+const profileSaveButton = document.getElementById("profile-save-button");
 const profileEmail = document.getElementById("profile-email");
 const profilePhone = document.getElementById("profile-phone");
 const profileAddress = document.getElementById("profile-address");
 const profileCity = document.getElementById("profile-city");
 const profileState = document.getElementById("profile-state");
 const profilePincode = document.getElementById("profile-pincode");
+const profileAddressCount = document.getElementById("profile-address-count");
+const profileAddressList = document.getElementById("profile-address-list");
+const profileDefaultAddress = document.getElementById("profile-default-address");
 const profileNameInput = document.getElementById("profile-name");
 const profilePhoneInput = document.getElementById("profile-phone-input");
 const profileAddressInput = document.getElementById("profile-address-input");
@@ -95,6 +100,7 @@ let activeModalProductId = null;
 let activeGalleryIndex = 0;
 let toastTimer = null;
 const lastPincodeLookupByScope = new Map();
+let activeCheckoutAddressId = "";
 let countryStateCityModule = null;
 let authUser = null;
 let authSessionToken = "";
@@ -237,6 +243,130 @@ function populateProfileCityOptions(stateName) {
   profileCityOptions.innerHTML = cities
     .map((city) => `<option value="${city}"></option>`)
     .join("");
+}
+
+function renderCheckoutAddressOptions(profile, selectedId = "") {
+  if (!checkoutAddressSelect) return;
+
+  const normalized = normalizeSavedProfile(profile);
+  const addresses = normalized?.addresses || [];
+
+  if (addresses.length === 0) {
+    checkoutAddressSelect.innerHTML = '<option value="">Choose from saved addresses</option>';
+    checkoutAddressSelect.disabled = true;
+    return;
+  }
+
+  checkoutAddressSelect.disabled = false;
+  checkoutAddressSelect.innerHTML = [
+    '<option value="">Choose from saved addresses</option>',
+    ...addresses.map(
+      (address) =>
+        `<option value="${escapeHtml(address.id)}">${escapeHtml(formatSavedAddressLabel(address))}</option>`
+    ),
+  ].join("");
+
+  const nextSelectedId = selectedId && addresses.some((address) => address.id === selectedId)
+    ? selectedId
+    : normalized.defaultAddressId || addresses[0].id;
+
+  checkoutAddressSelect.value = nextSelectedId || "";
+  activeCheckoutAddressId = checkoutAddressSelect.value || nextSelectedId || "";
+}
+
+function renderProfileAddressBook(profile) {
+  if (!profileAddressList || !profileAddressCount) return;
+
+  const normalized = normalizeSavedProfile(profile);
+  const addresses = normalized?.addresses || [];
+
+  profileAddressCount.textContent =
+    addresses.length === 1 ? "1 saved" : `${addresses.length} saved`;
+
+  if (profileSaveButton) {
+    profileSaveButton.textContent = addresses.length > 0 ? "Save another address" : "Save address";
+  }
+
+  if (addresses.length === 0) {
+    profileAddressList.innerHTML =
+      '<p class="empty-state profile-address-empty">No saved addresses yet. Add your first one below.</p>';
+    return;
+  }
+
+  profileAddressList.innerHTML = addresses
+    .map((address) => {
+      const isDefault = address.id === normalized.defaultAddressId;
+      const fullLine = [address.address, address.city, address.state, address.pincode]
+        .filter(Boolean)
+        .join(" · ");
+
+      return `
+        <article class="profile-address-card ${isDefault ? "is-default" : ""}">
+          <div class="profile-address-card-head">
+            <div>
+              <strong>${escapeHtml(address.label || "Saved address")}</strong>
+              ${isDefault ? '<span class="profile-default-badge">Default</span>' : ""}
+            </div>
+            <div class="profile-address-card-actions">
+              ${
+                isDefault
+                  ? ""
+                  : `<button type="button" class="text-button" data-address-default="${escapeHtml(address.id)}">Set default</button>`
+              }
+              <button type="button" class="text-button" data-address-delete="${escapeHtml(address.id)}">Delete</button>
+            </div>
+          </div>
+          <p>${escapeHtml(address.name || "")}</p>
+          <p>${escapeHtml(address.phone || "")}</p>
+          <p>${escapeHtml(fullLine)}</p>
+          ${address.landmark ? `<p>${escapeHtml(address.landmark)}</p>` : ""}
+        </article>
+      `;
+    })
+    .join("");
+}
+
+function populateCheckoutFromAddress(address, { replace = false } = {}) {
+  if (!address) return;
+
+  if (customerName && (replace || !customerName.value.trim())) customerName.value = address.name || "";
+  if (customerPhone && (replace || !customerPhone.value.trim())) customerPhone.value = address.phone || "";
+  if (customerAddress && (replace || !customerAddress.value.trim())) customerAddress.value = address.address || "";
+  if (customerLandmark && (replace || !customerLandmark.value.trim())) customerLandmark.value = address.landmark || "";
+
+  if (address.state) {
+    const changed = setSelectedValue(customerState, address.state);
+    if (changed || replace) {
+      populateCityOptions(customerState.value);
+    }
+  }
+
+  if (address.city) {
+    ensureCityOption(address.city);
+    if (replace || !customerCity.value.trim()) {
+      setSelectedValue(customerCity, address.city);
+    }
+  }
+
+  if (customerPincode && (replace || !customerPincode.value.trim())) customerPincode.value = address.pincode || "";
+}
+
+function syncSavedAddressSelection(profile, addressId) {
+  const normalized = normalizeSavedProfile(profile);
+  const addresses = normalized?.addresses || [];
+  if (addresses.length === 0) return null;
+
+  const selectedAddress =
+    addresses.find((address) => address.id === addressId) ||
+    addresses.find((address) => address.id === normalized.defaultAddressId) ||
+    addresses[0];
+
+  if (!selectedAddress) return null;
+
+  activeCheckoutAddressId = selectedAddress.id;
+  renderCheckoutAddressOptions(normalized, selectedAddress.id);
+  populateCheckoutFromAddress(selectedAddress, { replace: true });
+  return selectedAddress;
 }
 
 async function loadFullIndiaLocationData() {
@@ -423,6 +553,125 @@ function getProfileStorageKey(email) {
   return `${PROFILE_STORAGE_PREFIX}${email.trim().toLowerCase()}`;
 }
 
+function createAddressId() {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  return `addr-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+function normalizeAddressEntry(address, index = 0) {
+  if (!address || typeof address !== "object") return null;
+
+  const id = String(address.id || "").trim() || createAddressId();
+  const name = String(address.name || "").trim();
+  const phone = String(address.phone || "").trim();
+  const line = String(address.address || "").trim();
+  const state = String(address.state || "").trim();
+  const city = String(address.city || "").trim();
+  const pincode = String(address.pincode || "").trim();
+  const landmark = String(address.landmark || "").trim();
+  const label =
+    String(address.label || "").trim() ||
+    (index === 0 ? "Default address" : `Address ${index + 1}`);
+
+  return {
+    id,
+    label,
+    name,
+    phone,
+    address: line,
+    state,
+    city,
+    pincode,
+    landmark,
+    isDefault: Boolean(address.isDefault),
+  };
+}
+
+function normalizeSavedProfile(profile) {
+  if (!profile || typeof profile !== "object") return null;
+
+  if (Array.isArray(profile.addresses) && profile.addresses.length > 0) {
+    const addresses = profile.addresses
+      .map((address, index) => normalizeAddressEntry(address, index))
+      .filter(Boolean);
+
+    if (addresses.length === 0) return null;
+
+    let defaultAddressId = String(profile.defaultAddressId || "").trim();
+    if (!defaultAddressId || !addresses.some((address) => address.id === defaultAddressId)) {
+      defaultAddressId = addresses.find((address) => address.isDefault)?.id || addresses[0].id;
+    }
+
+    addresses.forEach((address) => {
+      address.isDefault = address.id === defaultAddressId;
+    });
+
+    const defaultAddress = addresses.find((address) => address.id === defaultAddressId) || addresses[0];
+
+    return {
+      name: String(profile.name || defaultAddress?.name || "").trim(),
+      phone: String(profile.phone || defaultAddress?.phone || "").trim(),
+      defaultAddressId,
+      addresses,
+    };
+  }
+
+  const legacyAddress = normalizeAddressEntry(
+    {
+      id: "default-address",
+      label: "Default address",
+      name: profile.name || "",
+      phone: profile.phone || "",
+      address: profile.address || "",
+      state: profile.state || "",
+      city: profile.city || "",
+      pincode: profile.pincode || "",
+      landmark: profile.landmark || "",
+      isDefault: true,
+    },
+    0
+  );
+
+  const hasLegacyContent = Boolean(
+    legacyAddress?.name ||
+      legacyAddress?.phone ||
+      legacyAddress?.address ||
+      legacyAddress?.state ||
+      legacyAddress?.city ||
+      legacyAddress?.pincode ||
+      legacyAddress?.landmark
+  );
+
+  if (!hasLegacyContent) {
+    return null;
+  }
+
+  return {
+    name: legacyAddress.name,
+    phone: legacyAddress.phone,
+    defaultAddressId: legacyAddress.id,
+    addresses: [legacyAddress],
+  };
+}
+
+function getDefaultSavedAddress(profile) {
+  const normalized = normalizeSavedProfile(profile);
+  if (!normalized?.addresses?.length) return null;
+  return (
+    normalized.addresses.find((address) => address.id === normalized.defaultAddressId) ||
+    normalized.addresses[0] ||
+    null
+  );
+}
+
+function formatSavedAddressLabel(address) {
+  if (!address) return "Saved address";
+  const parts = [address.label, address.city, address.state].filter(Boolean);
+  return parts.join(" · ") || "Saved address";
+}
+
 function getStoredAuthActivity() {
   try {
     const value = Number(localStorage.getItem(AUTH_ACTIVITY_KEY) || "0");
@@ -508,7 +757,7 @@ function readSavedProfile(email) {
   const storageKey = getProfileStorageKey(email);
   try {
     const stored = localStorage.getItem(storageKey);
-    if (stored) return JSON.parse(stored);
+    if (stored) return normalizeSavedProfile(JSON.parse(stored));
   } catch {
     // Ignore localStorage parse/read issues.
   }
@@ -521,9 +770,24 @@ function saveProfileLocally(profile) {
   if (!email) return;
 
   try {
-    localStorage.setItem(getProfileStorageKey(email), JSON.stringify(profile));
+    const normalized = normalizeSavedProfile(profile);
+    if (!normalized) return;
+    localStorage.setItem(getProfileStorageKey(email), JSON.stringify(normalized));
   } catch {
     // Ignore localStorage issues.
+  }
+}
+
+async function syncProfileToServer(profile) {
+  if (!authSessionToken) return;
+
+  try {
+    await fetchAuthJson("/api/profile", {
+      method: "PUT",
+      body: JSON.stringify({ email: getAuthEmailAddress(), profile }),
+    });
+  } catch {
+    // Keep the local copy if the server sync is unavailable.
   }
 }
 
@@ -762,47 +1026,122 @@ function collectCheckoutProfile() {
   };
 }
 
-function populateCheckoutProfile(profile) {
+function populateCheckoutProfile(profile, { replace = false } = {}) {
   if (!profile) return;
 
-  if (customerName && !customerName.value.trim()) customerName.value = profile.name || "";
-  if (customerPhone && !customerPhone.value.trim()) customerPhone.value = profile.phone || "";
-  if (customerAddress && !customerAddress.value.trim()) customerAddress.value = profile.address || "";
-  if (customerLandmark && !customerLandmark.value.trim()) customerLandmark.value = profile.landmark || "";
-  if (customerNote && !customerNote.value.trim()) customerNote.value = profile.note || "";
+  if (Array.isArray(profile.addresses)) {
+    const address = getDefaultSavedAddress(profile);
+    renderCheckoutAddressOptions(profile, address?.id || "");
+    populateCheckoutFromAddress(address, { replace: true });
+    if (customerNote && !customerNote.value.trim()) customerNote.value = profile.note || "";
+    return;
+  }
+
+  if (customerName && (replace || !customerName.value.trim())) customerName.value = profile.name || "";
+  if (customerPhone && (replace || !customerPhone.value.trim())) customerPhone.value = profile.phone || "";
+  if (customerAddress && (replace || !customerAddress.value.trim())) customerAddress.value = profile.address || "";
+  if (customerLandmark && (replace || !customerLandmark.value.trim())) customerLandmark.value = profile.landmark || "";
+  if (customerNote && (replace || !customerNote.value.trim())) customerNote.value = profile.note || "";
 
   if (profile.state) {
     const changed = setSelectedValue(customerState, profile.state);
-    if (changed) {
+    if (changed || replace) {
       populateCityOptions(customerState.value);
     }
   }
 
   if (profile.city) {
     ensureCityOption(profile.city);
-    setSelectedValue(customerCity, profile.city);
+    if (replace || !customerCity.value.trim()) {
+      setSelectedValue(customerCity, profile.city);
+    }
   }
 
-  if (customerPincode && !customerPincode.value.trim()) customerPincode.value = profile.pincode || "";
+  if (customerPincode && (replace || !customerPincode.value.trim())) customerPincode.value = profile.pincode || "";
 }
 
 async function persistCheckoutProfile() {
   const email = getAuthEmailAddress();
   if (!email) return;
 
-  const profile = collectCheckoutProfile();
-  saveProfileLocally(profile);
+  const current = collectCheckoutProfile();
+  if (
+    !current.name ||
+    !current.phone ||
+    !current.address ||
+    !current.state ||
+    !current.city ||
+    !current.pincode
+  ) {
+    return;
+  }
+
+  const storedProfile = normalizeSavedProfile(readSavedProfile(email));
+  const addresses = storedProfile?.addresses ? [...storedProfile.addresses] : [];
+  let selectedAddressId = activeCheckoutAddressId || storedProfile?.defaultAddressId || addresses[0]?.id || "";
+
+  if (addresses.length === 0) {
+    selectedAddressId = createAddressId();
+    addresses.push(
+      normalizeAddressEntry(
+        {
+          id: selectedAddressId,
+          label: "Default address",
+          ...current,
+          isDefault: true,
+        },
+        0
+      )
+    );
+  } else {
+    const currentIndex = addresses.findIndex((address) => address.id === selectedAddressId);
+    if (currentIndex >= 0) {
+      addresses[currentIndex] = normalizeAddressEntry(
+        {
+          ...addresses[currentIndex],
+          ...current,
+          id: addresses[currentIndex].id,
+          label: addresses[currentIndex].label,
+          isDefault: true,
+        },
+        currentIndex
+      );
+    } else {
+      selectedAddressId = createAddressId();
+      addresses.push(
+        normalizeAddressEntry(
+          {
+            id: selectedAddressId,
+            label: current.city || current.state || `Address ${addresses.length + 1}`,
+            ...current,
+            isDefault: true,
+          },
+          addresses.length
+        )
+      );
+    }
+  }
+
+  const defaultAddressId = storedProfile?.defaultAddressId || selectedAddressId;
+  const updatedProfile = {
+    name: current.name,
+    phone: current.phone,
+    defaultAddressId,
+    addresses: addresses.map((address, index) => ({
+      ...address,
+      label: address.label || (index === 0 ? "Default address" : `Address ${index + 1}`),
+      isDefault: address.id === defaultAddressId,
+    })),
+  };
+
+  saveProfileLocally(updatedProfile);
+  updateProfileSummary(updatedProfile);
+  renderCheckoutAddressOptions(updatedProfile, selectedAddressId);
+  activeCheckoutAddressId = selectedAddressId;
 
   if (!authSessionToken) return;
 
-  try {
-    await fetchAuthJson("/api/profile", {
-      method: "PUT",
-      body: JSON.stringify({ email, profile }),
-    });
-  } catch {
-    // Keep the local copy even if the server update fails.
-  }
+  await syncProfileToServer(updatedProfile);
 
   await refreshAuthSessionActivity({ touchServer: true });
 }
@@ -853,13 +1192,13 @@ function collectProfileForm() {
   };
 }
 
-function populateProfileForm(profile) {
+function populateProfileForm(profile, { replace = false } = {}) {
   if (!profile) return;
 
-  if (profileNameInput && !profileNameInput.value.trim()) profileNameInput.value = profile.name || "";
-  if (profilePhoneInput && !profilePhoneInput.value.trim()) profilePhoneInput.value = profile.phone || "";
-  if (profileAddressInput && !profileAddressInput.value.trim()) profileAddressInput.value = profile.address || "";
-  if (profileLandmarkInput && !profileLandmarkInput.value.trim()) profileLandmarkInput.value = profile.landmark || "";
+  if (profileNameInput && (replace || !profileNameInput.value.trim())) profileNameInput.value = profile.name || "";
+  if (profilePhoneInput && (replace || !profilePhoneInput.value.trim())) profilePhoneInput.value = profile.phone || "";
+  if (profileAddressInput && (replace || !profileAddressInput.value.trim())) profileAddressInput.value = profile.address || "";
+  if (profileLandmarkInput && (replace || !profileLandmarkInput.value.trim())) profileLandmarkInput.value = profile.landmark || "";
 
   if (profile.state) {
     setLocationFieldValue(
@@ -880,16 +1219,26 @@ function populateProfileForm(profile) {
     );
   }
 
-  if (profilePincodeInput && !profilePincodeInput.value.trim()) profilePincodeInput.value = profile.pincode || "";
+  if (profilePincodeInput && (replace || !profilePincodeInput.value.trim())) profilePincodeInput.value = profile.pincode || "";
 }
 
 function updateProfileSummary(profile) {
+  const normalized = normalizeSavedProfile(profile);
+  const address = getDefaultSavedAddress(normalized);
+
   if (profileEmail) profileEmail.textContent = getAuthEmailAddress() || "-";
-  if (profilePhone) profilePhone.textContent = profile?.phone || "-";
-  if (profileAddress) profileAddress.textContent = profile?.address || "-";
-  if (profileCity) profileCity.textContent = profile?.city || "-";
-  if (profileState) profileState.textContent = profile?.state || "-";
-  if (profilePincode) profilePincode.textContent = profile?.pincode || "-";
+  if (profilePhone) profilePhone.textContent = address?.phone || normalized?.phone || "-";
+  if (profileAddress) profileAddress.textContent = address?.address || "-";
+  if (profileCity) profileCity.textContent = address?.city || "-";
+  if (profileState) profileState.textContent = address?.state || "-";
+  if (profilePincode) profilePincode.textContent = address?.pincode || "-";
+
+  renderProfileAddressBook(normalized);
+  renderCheckoutAddressOptions(normalized, address?.id || "");
+
+  if (!address) {
+    activeCheckoutAddressId = "";
+  }
 }
 
 function openProfileModal() {
@@ -898,9 +1247,16 @@ function openProfileModal() {
     return;
   }
 
-  const profile = collectCheckoutProfile();
-  populateProfileForm(readSavedProfile(getAuthEmailAddress()) || profile);
+  const profile = normalizeSavedProfile(readSavedProfile(getAuthEmailAddress()));
+  const defaultAddress = getDefaultSavedAddress(profile) || collectCheckoutProfile();
+  populateProfileForm(defaultAddress, { replace: true });
   updateProfileSummary(profile);
+  if (profileSaveButton) {
+    profileSaveButton.textContent = profile?.addresses?.length ? "Save another address" : "Save address";
+  }
+  if (profileDefaultAddress) {
+    profileDefaultAddress.checked = true;
+  }
   setProfileMessage("These are the details saved to your account.", "neutral");
 
   if (!profileModal) return;
@@ -923,29 +1279,79 @@ async function saveProfileFromProfileModal() {
     return;
   }
 
-  const profile = collectProfileForm();
-  if (!profile.name || !profile.phone || !profile.address || !profile.state || !profile.city || !profile.pincode) {
+  const newAddress = collectProfileForm();
+  if (
+    !newAddress.name ||
+    !newAddress.phone ||
+    !newAddress.address ||
+    !newAddress.state ||
+    !newAddress.city ||
+    !newAddress.pincode
+  ) {
     setProfileMessage("Please fill name, phone, address, state, city, and pincode before saving.", "error");
     return;
   }
 
-  populateCheckoutProfile(profile);
-  saveProfileLocally(profile);
-  updateProfileSummary(profile);
-  setProfileMessage("Profile saved and synced with checkout.", "success");
-  showToast("Profile saved");
+  const currentProfile = normalizeSavedProfile(readSavedProfile(getAuthEmailAddress())) || {
+    name: newAddress.name,
+    phone: newAddress.phone,
+    defaultAddressId: "",
+    addresses: [],
+  };
 
-  if (authSessionToken) {
-    try {
-      await fetchAuthJson("/api/profile", {
-        method: "PUT",
-        body: JSON.stringify({ email: getAuthEmailAddress(), profile }),
-      });
-    } catch {
-      // Keep the local profile if the server sync is unavailable.
-    }
+  const addresses = Array.isArray(currentProfile.addresses) ? [...currentProfile.addresses] : [];
+  const createdAddress = normalizeAddressEntry(
+    {
+      ...newAddress,
+      id: createAddressId(),
+      label: newAddress.landmark || newAddress.city || newAddress.state || `Address ${addresses.length + 1}`,
+      isDefault:
+        Boolean(profileDefaultAddress?.checked) || addresses.length === 0 || !currentProfile.defaultAddressId,
+    },
+    addresses.length
+  );
+
+  if (!createdAddress) {
+    setProfileMessage("Could not create this address right now.", "error");
+    return;
   }
 
+  addresses.push(createdAddress);
+
+  const defaultAddressId = profileDefaultAddress?.checked || !currentProfile.defaultAddressId
+    ? createdAddress.id
+    : currentProfile.defaultAddressId;
+
+  const updatedProfile = {
+    name: createdAddress.name,
+    phone: createdAddress.phone,
+    defaultAddressId,
+    addresses: addresses.map((address) => ({
+      ...address,
+      isDefault: address.id === defaultAddressId,
+    })),
+  };
+
+  saveProfileLocally(updatedProfile);
+  populateCheckoutProfile(updatedProfile, { replace: true });
+  updateProfileSummary(updatedProfile);
+  renderProfileAddressBook(updatedProfile);
+  renderCheckoutAddressOptions(updatedProfile, defaultAddressId);
+  activeCheckoutAddressId = defaultAddressId;
+
+  if (profileNameInput) profileNameInput.value = "";
+  if (profilePhoneInput) profilePhoneInput.value = "";
+  if (profileAddressInput) profileAddressInput.value = "";
+  if (profileStateInput) profileStateInput.value = "";
+  if (profileCityInput) profileCityInput.value = "";
+  if (profilePincodeInput) profilePincodeInput.value = "";
+  if (profileLandmarkInput) profileLandmarkInput.value = "";
+  if (profileDefaultAddress) profileDefaultAddress.checked = true;
+
+  setProfileMessage("Address saved. You can add another or keep this one as default.", "success");
+  showToast("Address saved");
+
+  await syncProfileToServer(updatedProfile);
   await refreshAuthSessionActivity({ touchServer: true });
 }
 
@@ -966,6 +1372,16 @@ function closeAuthModal() {
 
 function openCheckoutModal() {
   if (!checkoutModal) return;
+
+  const savedProfile = normalizeSavedProfile(readSavedProfile(getAuthEmailAddress()));
+  if (savedProfile?.addresses?.length) {
+    const defaultAddress = getDefaultSavedAddress(savedProfile);
+    renderCheckoutAddressOptions(savedProfile, defaultAddress?.id || "");
+    populateCheckoutProfile(savedProfile, { replace: true });
+  } else {
+    renderCheckoutAddressOptions(savedProfile, "");
+  }
+
   checkoutModal.classList.add("is-open");
   checkoutModal.setAttribute("aria-hidden", "false");
   document.body.classList.add("modal-open");
@@ -1031,6 +1447,7 @@ function clearAuthSession() {
   lastAuthHeartbeatAt = 0;
   clearAuthIdleTimer();
   clearStoredAuthActivity();
+  activeCheckoutAddressId = "";
 
   try {
     localStorage.removeItem(AUTH_SESSION_KEY);
@@ -1042,6 +1459,26 @@ function clearAuthSession() {
   updateCheckoutButton();
   updateProfileButton();
   updateReviewFormAccess();
+  renderCheckoutAddressOptions(null, "");
+  updateProfileSummary(null);
+
+  if (customerName) customerName.value = "";
+  if (customerPhone) customerPhone.value = "";
+  if (customerAddress) customerAddress.value = "";
+  if (customerState) customerState.value = "";
+  if (customerCity) customerCity.value = "";
+  if (customerPincode) customerPincode.value = "";
+  if (customerLandmark) customerLandmark.value = "";
+  if (customerNote) customerNote.value = "";
+
+  if (profileAddressCount) profileAddressCount.textContent = "0 saved";
+  if (profileAddressList) {
+    profileAddressList.innerHTML =
+      '<p class="empty-state profile-address-empty">No saved addresses yet. Add your first one below.</p>';
+  }
+  if (profileSaveButton) {
+    profileSaveButton.textContent = "Save address";
+  }
 }
 
 async function restoreAuthSession() {
@@ -1061,7 +1498,7 @@ async function restoreAuthSession() {
     const session = await fetchAuthJson("/api/auth/me");
     authUser = { email: session.email };
     if (session.profile) {
-      populateCheckoutProfile(session.profile);
+      populateCheckoutProfile(session.profile, { replace: true });
       saveProfileLocally(session.profile);
     }
     saveStoredAuthActivity(Date.now());
@@ -1128,7 +1565,9 @@ async function verifyLoginCode() {
 
     saveAuthSession(result.sessionToken, result.email);
     closeAuthModal();
-    populateCheckoutProfile(result.profile || readSavedProfile(result.email) || null);
+    populateCheckoutProfile(result.profile || readSavedProfile(result.email) || null, {
+      replace: true,
+    });
     await persistCheckoutProfile();
     updateProfileButton();
     updateReviewFormAccess();
@@ -1228,6 +1667,93 @@ profileModalCloseButton?.addEventListener("click", closeProfileModal);
 profileForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
   await saveProfileFromProfileModal();
+});
+
+profileAddressList?.addEventListener("click", async (event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLElement)) return;
+
+  const defaultButton = target.closest("[data-address-default]");
+  const deleteButton = target.closest("[data-address-delete]");
+  if (!defaultButton && !deleteButton) return;
+
+  const profile = normalizeSavedProfile(readSavedProfile(getAuthEmailAddress()));
+  if (!profile?.addresses?.length) return;
+
+  if (defaultButton instanceof HTMLElement) {
+    const addressId = defaultButton.dataset.addressDefault || "";
+    const defaultAddress = profile.addresses.find((address) => address.id === addressId);
+    if (!defaultAddress) return;
+
+    const updatedProfile = {
+      ...profile,
+      name: defaultAddress.name,
+      phone: defaultAddress.phone,
+      defaultAddressId: defaultAddress.id,
+      addresses: profile.addresses.map((address) => ({
+        ...address,
+        isDefault: address.id === defaultAddress.id,
+      })),
+    };
+
+    saveProfileLocally(updatedProfile);
+    updateProfileSummary(updatedProfile);
+    renderCheckoutAddressOptions(updatedProfile, defaultAddress.id);
+    populateCheckoutProfile(defaultAddress, { replace: true });
+    activeCheckoutAddressId = defaultAddress.id;
+    setProfileMessage("Default address updated.", "success");
+    showToast("Default address updated");
+    await syncProfileToServer(updatedProfile);
+    await refreshAuthSessionActivity({ touchServer: true });
+  }
+
+  if (deleteButton instanceof HTMLElement) {
+    const addressId = deleteButton.dataset.addressDelete || "";
+    if (!window.confirm("Delete this saved address?")) return;
+
+    const remainingAddresses = profile.addresses.filter((address) => address.id !== addressId);
+    if (remainingAddresses.length === 0) {
+      const clearedProfile = { name: "", phone: "", defaultAddressId: "", addresses: [] };
+      try {
+        localStorage.removeItem(getProfileStorageKey(getAuthEmailAddress()));
+      } catch {
+        // Ignore storage errors.
+      }
+      renderProfileAddressBook(clearedProfile);
+      renderCheckoutAddressOptions(clearedProfile, "");
+      activeCheckoutAddressId = "";
+      setProfileMessage("Address deleted.", "neutral");
+      showToast("Address deleted");
+      await syncProfileToServer(clearedProfile);
+      await refreshAuthSessionActivity({ touchServer: true });
+      return;
+    }
+
+    const nextDefault = profile.defaultAddressId === addressId
+      ? remainingAddresses[0]
+      : remainingAddresses.find((address) => address.id === profile.defaultAddressId) || remainingAddresses[0];
+
+    const updatedProfile = {
+      ...profile,
+      name: nextDefault.name || profile.name,
+      phone: nextDefault.phone || profile.phone,
+      defaultAddressId: nextDefault.id,
+      addresses: remainingAddresses.map((address) => ({
+        ...address,
+        isDefault: address.id === nextDefault.id,
+      })),
+    };
+
+    saveProfileLocally(updatedProfile);
+    updateProfileSummary(updatedProfile);
+    renderCheckoutAddressOptions(updatedProfile, nextDefault.id);
+    populateCheckoutProfile(nextDefault, { replace: true });
+    activeCheckoutAddressId = nextDefault.id;
+    setProfileMessage("Address deleted.", "neutral");
+    showToast("Address deleted");
+    await syncProfileToServer(updatedProfile);
+    await refreshAuthSessionActivity({ touchServer: true });
+  }
 });
 authCode?.addEventListener("input", () => {
   if (!authCode) return;
@@ -1762,6 +2288,26 @@ profilePincodeInput?.addEventListener("input", () => {
 checkoutForm?.addEventListener("input", () => {
   if (authUser) {
     void persistCheckoutProfile();
+  }
+});
+
+checkoutAddressSelect?.addEventListener("change", () => {
+  if (!authUser) return;
+
+  const profile = normalizeSavedProfile(readSavedProfile(getAuthEmailAddress()));
+  if (!profile?.addresses?.length) return;
+
+  const selectedAddress =
+    profile.addresses.find((address) => address.id === checkoutAddressSelect.value) ||
+    getDefaultSavedAddress(profile);
+
+  if (!selectedAddress) return;
+
+  activeCheckoutAddressId = selectedAddress.id;
+  populateCheckoutFromAddress(selectedAddress, { replace: true });
+
+  if (checkoutFeedback) {
+    checkoutFeedback.textContent = `Using ${selectedAddress.label || "the selected"} saved address.`;
   }
 });
 
