@@ -12,6 +12,8 @@ function corsHeaders(origin = "*") {
   };
 }
 
+const AUTH_API_BASE_URL = "https://auriva-elite-auth.auriva-elite-auth.workers.dev";
+
 function jsonResponse(body, status = 200, origin = "*") {
   return new Response(JSON.stringify(body), {
     status,
@@ -36,6 +38,12 @@ async function readJson(request) {
   } catch {
     return null;
   }
+}
+
+function getBearerToken(request) {
+  const header = request.headers.get("Authorization") || "";
+  const match = header.match(/^Bearer\s+(.+)$/i);
+  return match ? match[1].trim() : "";
 }
 
 let reviewsSchemaReady = null;
@@ -132,6 +140,27 @@ async function createProductReview(env, review) {
   };
 }
 
+async function requireSignedInUser(request) {
+  const token = getBearerToken(request);
+  if (!token) return null;
+
+  const response = await fetch(`${AUTH_API_BASE_URL}/api/auth/me`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) return null;
+
+  const data = await response.json().catch(() => ({}));
+  if (!data?.email) return null;
+
+  return {
+    email: String(data.email).trim().toLowerCase(),
+    profile: data.profile || null,
+  };
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -168,9 +197,16 @@ export default {
     }
 
     if (url.pathname === "/api/reviews" && request.method === "POST") {
+      const signedInUser = await requireSignedInUser(request);
+      if (!signedInUser) {
+        return jsonResponse({ error: "Please sign in to write a review." }, 401, origin);
+      }
+
       const body = await readJson(request);
       const productId = normalizeProductId(body?.productId);
-      const author = String(body?.author || "").trim().slice(0, 60);
+      const author = String(body?.author || signedInUser.profile?.name || signedInUser.email.split("@")[0] || "Guest")
+        .trim()
+        .slice(0, 60);
       const comment = String(body?.comment || "").trim().slice(0, 800);
       const rating = Number(body?.rating || 5);
 

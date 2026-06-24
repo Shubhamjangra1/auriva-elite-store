@@ -1238,6 +1238,28 @@ button {
   border-top: 1px solid rgba(155, 132, 106, 0.14);
 }
 
+.product-review-auth-note {
+  margin: -2px 0 0;
+  padding: 11px 14px;
+  border-radius: 16px;
+  background: rgba(245, 235, 223, 0.72);
+  border: 1px solid rgba(155, 132, 106, 0.12);
+  color: rgba(84, 67, 49, 0.78);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.product-review-form[aria-disabled="true"] {
+  opacity: 0.78;
+}
+
+.product-review-form[aria-disabled="true"] .text-input,
+.product-review-form[aria-disabled="true"] .text-area,
+.product-review-form[aria-disabled="true"] .star-rating label,
+.product-review-form[aria-disabled="true"] .button {
+  cursor: not-allowed;
+}
+
 .product-review-heading {
   display: flex;
   align-items: flex-end;

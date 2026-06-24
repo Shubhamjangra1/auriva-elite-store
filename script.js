@@ -58,6 +58,7 @@ const productReviewRatingInputs = Array.from(
 );
 const productReviewSubmit = document.getElementById("product-review-submit");
 const productReviewCount = document.getElementById("product-review-count");
+const productReviewAuthNote = document.getElementById("product-review-auth-note");
 const productReviewList = document.getElementById("product-review-list");
 const modalCartButton = document.getElementById("product-modal-cart");
 const modalAmazonLink = document.getElementById("product-modal-amazon");
@@ -690,8 +691,32 @@ function resetProductReviewForm() {
   }
 }
 
+function updateReviewFormAccess() {
+  const signedIn = Boolean(authUser);
+
+  if (productReviewForm) {
+    productReviewForm.setAttribute("aria-disabled", String(!signedIn));
+  }
+
+  [productReviewName, productReviewText, productReviewSubmit, ...productReviewRatingInputs]
+    .filter(Boolean)
+    .forEach((control) => {
+      control.disabled = !signedIn;
+    });
+
+  if (productReviewAuthNote) {
+    productReviewAuthNote.hidden = signedIn;
+  }
+}
+
 async function saveProductReview(productId) {
   if (!productId || !productReviewText) return;
+
+  if (!authUser) {
+    showToast("Please sign in to write a review.");
+    openAuthModal();
+    return;
+  }
 
   const author = (productReviewName?.value.trim() || getDefaultReviewName()).slice(0, 60);
   const comment = productReviewText.value.trim();
@@ -992,6 +1017,7 @@ function saveAuthSession(token, email) {
   updateAuthButton();
   updateCheckoutButton();
   updateProfileButton();
+  updateReviewFormAccess();
 }
 
 function clearAuthSession() {
@@ -1010,6 +1036,7 @@ function clearAuthSession() {
   updateAuthButton();
   updateCheckoutButton();
   updateProfileButton();
+  updateReviewFormAccess();
 }
 
 async function restoreAuthSession() {
@@ -1035,6 +1062,7 @@ async function restoreAuthSession() {
     saveStoredAuthActivity(Date.now());
     scheduleAuthIdleTimeout();
     updateProfileButton();
+    updateReviewFormAccess();
   } catch {
     clearAuthSession();
   }
@@ -1098,6 +1126,7 @@ async function verifyLoginCode() {
     populateCheckoutProfile(result.profile || readSavedProfile(result.email) || null);
     await persistCheckoutProfile();
     updateProfileButton();
+    updateReviewFormAccess();
     setAuthMessage(`Signed in as ${result.email}.`, "success");
     showToast("Login successful");
   } catch (error) {
@@ -1138,6 +1167,8 @@ async function initializeAuth() {
   } else {
     setAuthMessage("Sign in with your email to continue to checkout.", "neutral");
   }
+
+  updateReviewFormAccess();
 }
 
 function handleAuthActivity() {
@@ -1463,6 +1494,7 @@ function openProductModal(productId) {
 
   renderProductReviews(product.id);
   resetProductReviewForm();
+  updateReviewFormAccess();
 
   modal.classList.add("is-open");
   modal.setAttribute("aria-hidden", "false");
