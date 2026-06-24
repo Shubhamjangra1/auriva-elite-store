@@ -1232,8 +1232,8 @@ button {
 
 .product-review-shell {
   display: grid;
-  gap: 12px;
-  margin-top: 4px;
+  gap: 14px;
+  margin-top: 6px;
 }
 
 .product-review-form {
@@ -1315,26 +1315,39 @@ button {
 
 .product-review-list {
   display: grid;
-  gap: 12px;
+  gap: 14px;
 }
 
 .product-review-item {
-  padding: 14px 16px;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.82);
-  border: 1px solid rgba(109, 91, 69, 0.1);
+  position: relative;
+  padding: 16px 18px 16px 20px;
+  border-radius: 20px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(250, 245, 238, 0.78));
+  border: 1px solid rgba(109, 91, 69, 0.08);
+  box-shadow: 0 10px 30px rgba(109, 91, 69, 0.05);
+  overflow: hidden;
+}
+
+.product-review-item::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  border-radius: 20px 0 0 20px;
+  background: linear-gradient(180deg, rgba(212, 182, 143, 0.9), rgba(155, 132, 106, 0.45));
 }
 
 .product-review-top {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .product-review-avatar {
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   flex: 0 0 auto;
   border-radius: 50%;
   display: grid;
@@ -1380,13 +1393,13 @@ button {
 .product-review-badge {
   display: inline-flex;
   align-items: center;
-  min-height: 24px;
-  padding: 0 10px;
+  min-height: 22px;
+  padding: 0 9px;
   border-radius: 999px;
   background: rgba(212, 182, 143, 0.18);
   color: #8c714f;
-  font-size: 0.7rem;
-  font-weight: 700;
+  font-size: 0.68rem;
+  font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -1398,7 +1411,8 @@ button {
 .product-review-item p {
   margin: 0;
   color: var(--text);
-  line-height: 1.7;
+  line-height: 1.75;
+  padding-left: 52px;
 }
 
 .product-review-empty {
@@ -1732,6 +1746,10 @@ body.modal-open {
   .checkout-modal-heading h2 {
     max-width: none;
     font-size: clamp(1.8rem, 8vw, 2.4rem);
+  }
+
+  .product-review-item p {
+    padding-left: 0;
   }
 }
 
