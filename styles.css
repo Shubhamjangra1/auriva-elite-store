@@ -1236,6 +1236,35 @@ button {
   margin-top: 6px;
 }
 
+.product-review-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 2px 2px 0;
+}
+
+.product-review-heading > div {
+  display: grid;
+  gap: 4px;
+}
+
+.product-review-kicker {
+  margin: 0;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #a28764;
+}
+
+.product-review-intro {
+  margin: 0;
+  color: rgba(84, 67, 49, 0.7);
+  font-size: 0.94rem;
+  line-height: 1.5;
+}
+
 .product-review-form {
   display: grid;
   gap: 12px;
@@ -1409,10 +1438,22 @@ button {
 }
 
 .product-review-item p {
+  position: relative;
   margin: 0;
   color: var(--text);
   line-height: 1.75;
   padding-left: 52px;
+}
+
+.product-review-item p::before {
+  content: "“";
+  position: absolute;
+  left: 0;
+  top: -14px;
+  font-size: 2.6rem;
+  line-height: 1;
+  color: rgba(212, 182, 143, 0.28);
+  font-family: Georgia, "Times New Roman", serif;
 }
 
 .product-review-empty {
@@ -1750,6 +1791,11 @@ body.modal-open {
 
   .product-review-item p {
     padding-left: 0;
+  }
+
+  .product-review-item p::before {
+    left: 0;
+    top: -10px;
   }
 }
 
