@@ -1480,9 +1480,23 @@ body.modal-open {
     padding: 10px 0;
   }
 
+  .announcement-bar::before,
+  .announcement-bar::after {
+    width: 28px;
+  }
+
   .announcement-track {
-    animation-duration: 22s;
-    gap: 24px;
+    animation-duration: 28s;
+    gap: 18px;
+  }
+
+  .announcement-group {
+    gap: 22px;
+    padding-inline: 14px;
+  }
+
+  .announcement-group span:not(:last-child)::after {
+    margin-left: 22px;
   }
 
   .page-shell {
