@@ -1064,12 +1064,12 @@ button {
 
 .profile-modal-dialog {
   position: relative;
-  width: min(1040px, calc(100% - 28px));
+  width: min(1080px, calc(100% - 28px));
   margin: 16px auto;
   border-radius: 26px;
-  padding: 22px;
+  padding: 24px;
   background: var(--panel-strong);
-  border: 1px solid var(--line);
+  border: 1px solid rgba(109, 91, 69, 0.1);
   box-shadow: var(--shadow);
   max-height: calc(100vh - 32px);
   overflow: auto;
@@ -1078,43 +1078,43 @@ button {
 .profile-layout {
   display: grid;
   grid-template-columns: 0.9fr 1.1fr;
-  gap: 18px;
+  gap: 16px;
 }
 
 .profile-summary,
 .profile-form {
-  background: rgba(255, 255, 255, 0.82);
-  border: 1px solid rgba(109, 91, 69, 0.1);
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(109, 91, 69, 0.09);
   border-radius: 24px;
-  padding: 22px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  padding: 20px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.62);
 }
 
 .profile-summary h3 {
-  margin: 0 0 14px;
+  margin: 0 0 12px;
   font-family: "Cormorant Garamond", serif;
-  font-size: 1.9rem;
+  font-size: 1.75rem;
   line-height: 0.95;
 }
 
 .profile-summary-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: 12px;
 }
 
 .profile-summary-grid div {
-  padding: 12px 14px;
-  border-radius: 18px;
-  background: rgba(251, 248, 243, 0.9);
-  border: 1px solid rgba(109, 91, 69, 0.08);
+  padding: 11px 13px;
+  border-radius: 16px;
+  background: rgba(251, 248, 243, 0.88);
+  border: 1px solid rgba(109, 91, 69, 0.07);
 }
 
 .profile-summary-grid span {
   display: block;
   margin-bottom: 4px;
-  font-size: 0.72rem;
-  letter-spacing: 0.1em;
+  font-size: 0.7rem;
+  letter-spacing: 0.11em;
   text-transform: uppercase;
   color: #9b846a;
 }
@@ -1132,13 +1132,18 @@ button {
 
 .profile-form {
   display: grid;
-  gap: 16px;
+  gap: 14px;
 }
 
 .profile-actions {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
+  margin-top: 2px;
+}
+
+.profile-actions .button {
+  border-radius: 999px;
 }
 
 .checkout-layout-modal .checkout-form {
