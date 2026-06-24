@@ -101,6 +101,7 @@ let activeGalleryIndex = 0;
 let toastTimer = null;
 const lastPincodeLookupByScope = new Map();
 let activeCheckoutAddressId = "";
+let editingProfileAddressId = "";
 let countryStateCityModule = null;
 let authUser = null;
 let authSessionToken = "";
@@ -308,6 +309,7 @@ function renderProfileAddressBook(profile) {
               ${isDefault ? '<span class="profile-default-badge">Default</span>' : ""}
             </div>
             <div class="profile-address-card-actions">
+              <button type="button" class="text-button" data-address-edit="${escapeHtml(address.id)}">Edit</button>
               ${
                 isDefault
                   ? ""
@@ -1222,6 +1224,46 @@ function populateProfileForm(profile, { replace = false } = {}) {
   if (profilePincodeInput && (replace || !profilePincodeInput.value.trim())) profilePincodeInput.value = profile.pincode || "";
 }
 
+function clearProfileAddressForm() {
+  if (profileNameInput) profileNameInput.value = "";
+  if (profilePhoneInput) profilePhoneInput.value = "";
+  if (profileAddressInput) profileAddressInput.value = "";
+  if (profileStateInput) profileStateInput.value = "";
+  if (profileCityInput) profileCityInput.value = "";
+  if (profilePincodeInput) profilePincodeInput.value = "";
+  if (profileLandmarkInput) profileLandmarkInput.value = "";
+  if (profileDefaultAddress) profileDefaultAddress.checked = true;
+}
+
+function setProfileAddressFormMode(mode = "add") {
+  editingProfileAddressId = mode === "edit" ? editingProfileAddressId : "";
+
+  if (profileSaveButton) {
+    profileSaveButton.textContent = editingProfileAddressId ? "Update address" : "Save address";
+  }
+}
+
+function beginEditingProfileAddress(addressId) {
+  if (!authUser) {
+    openAuthModal();
+    return;
+  }
+
+  const profile = normalizeSavedProfile(readSavedProfile(getAuthEmailAddress()));
+  const address = profile?.addresses?.find((entry) => entry.id === addressId);
+  if (!address) return;
+
+  editingProfileAddressId = address.id;
+  populateProfileForm(address, { replace: true });
+  if (profileDefaultAddress) profileDefaultAddress.checked = address.id === profile.defaultAddressId;
+  if (profileSaveButton) profileSaveButton.textContent = "Update address";
+  setProfileMessage("Editing a saved address. Save when you're done.", "neutral");
+  profileModal?.classList.add("is-open");
+  profileModal?.setAttribute("aria-hidden", "false");
+  document.body.classList.add("modal-open");
+  setTimeout(() => profileNameInput?.focus(), 50);
+}
+
 function updateProfileSummary(profile) {
   const normalized = normalizeSavedProfile(profile);
   const address = getDefaultSavedAddress(normalized);
@@ -1247,6 +1289,7 @@ function openProfileModal() {
     return;
   }
 
+  editingProfileAddressId = "";
   const profile = normalizeSavedProfile(readSavedProfile(getAuthEmailAddress()));
   const defaultAddress = getDefaultSavedAddress(profile) || collectCheckoutProfile();
   populateProfileForm(defaultAddress, { replace: true });
@@ -1300,31 +1343,55 @@ async function saveProfileFromProfileModal() {
   };
 
   const addresses = Array.isArray(currentProfile.addresses) ? [...currentProfile.addresses] : [];
-  const createdAddress = normalizeAddressEntry(
+  const existingIndex = editingProfileAddressId
+    ? addresses.findIndex((address) => address.id === editingProfileAddressId)
+    : -1;
+  const existingAddress = existingIndex >= 0 ? addresses[existingIndex] : null;
+  const wantsDefault = Boolean(profileDefaultAddress?.checked);
+  const addressId = existingAddress?.id || createAddressId();
+  const addressLabel =
+    existingAddress?.label ||
+    newAddress.landmark ||
+    newAddress.city ||
+    newAddress.state ||
+    `Address ${existingIndex >= 0 ? existingIndex + 1 : addresses.length + 1}`;
+
+  const savedAddress = normalizeAddressEntry(
     {
+      ...existingAddress,
       ...newAddress,
-      id: createAddressId(),
-      label: newAddress.landmark || newAddress.city || newAddress.state || `Address ${addresses.length + 1}`,
-      isDefault:
-        Boolean(profileDefaultAddress?.checked) || addresses.length === 0 || !currentProfile.defaultAddressId,
+      id: addressId,
+      label: addressLabel,
+      isDefault: wantsDefault || addresses.length === 0 || !currentProfile.defaultAddressId,
     },
-    addresses.length
+    existingIndex >= 0 ? existingIndex : addresses.length
   );
 
-  if (!createdAddress) {
+  if (!savedAddress) {
     setProfileMessage("Could not create this address right now.", "error");
     return;
   }
 
-  addresses.push(createdAddress);
+  if (existingIndex >= 0) {
+    addresses[existingIndex] = savedAddress;
+  } else {
+    addresses.push(savedAddress);
+  }
 
-  const defaultAddressId = profileDefaultAddress?.checked || !currentProfile.defaultAddressId
-    ? createdAddress.id
-    : currentProfile.defaultAddressId;
+  let defaultAddressId = currentProfile.defaultAddressId || savedAddress.id;
+  if (wantsDefault || addresses.length === 1 || !defaultAddressId) {
+    defaultAddressId = savedAddress.id;
+  }
+  if (!addresses.some((address) => address.id === defaultAddressId)) {
+    defaultAddressId = savedAddress.id;
+  }
+  if (!wantsDefault && existingAddress?.id === currentProfile.defaultAddressId && addresses.length > 1) {
+    defaultAddressId = addresses.find((address) => address.id !== savedAddress.id)?.id || savedAddress.id;
+  }
 
   const updatedProfile = {
-    name: createdAddress.name,
-    phone: createdAddress.phone,
+    name: savedAddress.name,
+    phone: savedAddress.phone,
     defaultAddressId,
     addresses: addresses.map((address) => ({
       ...address,
@@ -1339,17 +1406,12 @@ async function saveProfileFromProfileModal() {
   renderCheckoutAddressOptions(updatedProfile, defaultAddressId);
   activeCheckoutAddressId = defaultAddressId;
 
-  if (profileNameInput) profileNameInput.value = "";
-  if (profilePhoneInput) profilePhoneInput.value = "";
-  if (profileAddressInput) profileAddressInput.value = "";
-  if (profileStateInput) profileStateInput.value = "";
-  if (profileCityInput) profileCityInput.value = "";
-  if (profilePincodeInput) profilePincodeInput.value = "";
-  if (profileLandmarkInput) profileLandmarkInput.value = "";
-  if (profileDefaultAddress) profileDefaultAddress.checked = true;
+  clearProfileAddressForm();
+  editingProfileAddressId = "";
+  if (profileSaveButton) profileSaveButton.textContent = "Save address";
 
-  setProfileMessage("Address saved. You can add another or keep this one as default.", "success");
-  showToast("Address saved");
+  setProfileMessage(existingIndex >= 0 ? "Address updated." : "Address saved. You can add another or keep this one as default.", "success");
+  showToast(existingIndex >= 0 ? "Address updated" : "Address saved");
 
   await syncProfileToServer(updatedProfile);
   await refreshAuthSessionActivity({ touchServer: true });
@@ -1448,6 +1510,7 @@ function clearAuthSession() {
   clearAuthIdleTimer();
   clearStoredAuthActivity();
   activeCheckoutAddressId = "";
+  editingProfileAddressId = "";
 
   try {
     localStorage.removeItem(AUTH_SESSION_KEY);
@@ -1673,12 +1736,19 @@ profileAddressList?.addEventListener("click", async (event) => {
   const target = event.target;
   if (!(target instanceof HTMLElement)) return;
 
+  const editButton = target.closest("[data-address-edit]");
   const defaultButton = target.closest("[data-address-default]");
   const deleteButton = target.closest("[data-address-delete]");
-  if (!defaultButton && !deleteButton) return;
+  if (!editButton && !defaultButton && !deleteButton) return;
 
   const profile = normalizeSavedProfile(readSavedProfile(getAuthEmailAddress()));
   if (!profile?.addresses?.length) return;
+
+  if (editButton instanceof HTMLElement) {
+    const addressId = editButton.dataset.addressEdit || "";
+    beginEditingProfileAddress(addressId);
+    return;
+  }
 
   if (defaultButton instanceof HTMLElement) {
     const addressId = defaultButton.dataset.addressDefault || "";
