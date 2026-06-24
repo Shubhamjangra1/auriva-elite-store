@@ -1216,16 +1216,25 @@ button {
 .profile-address-card {
   padding: 14px 16px;
   border-radius: 18px;
-  background: rgba(251, 248, 243, 0.88);
+  background: linear-gradient(180deg, rgba(255, 253, 249, 0.94), rgba(248, 242, 234, 0.88));
   border: 1px solid rgba(109, 91, 69, 0.08);
+  box-shadow: 0 10px 24px rgba(109, 91, 69, 0.03);
+  backdrop-filter: blur(8px);
   display: grid;
   gap: 8px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
 }
 
 .profile-address-card.is-default {
   background: linear-gradient(180deg, rgba(255, 253, 249, 0.92), rgba(245, 236, 226, 0.8));
   border-color: rgba(212, 182, 143, 0.32);
-  box-shadow: 0 10px 24px rgba(109, 91, 69, 0.05);
+  box-shadow: 0 14px 32px rgba(109, 91, 69, 0.08);
+}
+
+.profile-address-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(212, 182, 143, 0.24);
+  box-shadow: 0 14px 28px rgba(109, 91, 69, 0.06);
 }
 
 .profile-address-card-head {
@@ -1257,15 +1266,33 @@ button {
 
 .profile-address-card-actions {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
   justify-content: flex-end;
+}
+
+.profile-address-card-actions .text-button {
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(109, 91, 69, 0.08);
+  box-shadow: 0 6px 14px rgba(109, 91, 69, 0.03);
+}
+
+.profile-address-card-actions .text-button:hover {
+  background: rgba(255, 248, 237, 0.92);
+  border-color: rgba(212, 182, 143, 0.28);
 }
 
 .profile-address-card p {
   margin: 0;
   color: var(--text);
   line-height: 1.55;
+}
+
+.profile-address-card p:first-of-type {
+  font-weight: 600;
 }
 
 .profile-form {
