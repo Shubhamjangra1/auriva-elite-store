@@ -282,7 +282,7 @@ function renderCheckoutAddressOptions(profile, selectedId = "") {
     .map((address) => {
       const isSelected = address.id === activeCheckoutAddressId;
       const isDefault = address.id === normalized.defaultAddressId;
-      const details = [address.address, address.city, address.state, address.pincode].filter(Boolean).join(" · ");
+      const details = [address.address, address.city, address.state, address.pincode].filter(Boolean).join(" ? ");
       return `
         <button
           type="button"

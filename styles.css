@@ -427,6 +427,7 @@ button {
   display: grid;
   gap: 10px;
   margin-top: 2px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 
 .checkout-address-empty {
@@ -441,11 +442,11 @@ button {
   -webkit-appearance: none;
   color: var(--text);
   display: grid;
-  gap: 6px;
+  gap: 4px;
   width: 100%;
   text-align: left;
-  padding: 14px 16px 14px 18px;
-  border-radius: 18px;
+  padding: 12px 14px 12px 16px;
+  border-radius: 16px;
   background: linear-gradient(180deg, rgba(255, 253, 249, 0.96), rgba(248, 242, 234, 0.9));
   border: 1px solid rgba(109, 91, 69, 0.1);
   box-shadow: 0 10px 24px rgba(109, 91, 69, 0.04);
@@ -487,23 +488,23 @@ button {
 .checkout-address-card-head {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
 }
 
 .checkout-address-card-head strong {
-  font-size: 0.98rem;
+  font-size: 0.95rem;
 }
 
 .checkout-address-card-badge {
   display: inline-flex;
   align-items: center;
-  min-height: 22px;
-  padding: 0 9px;
+  min-height: 20px;
+  padding: 0 8px;
   border-radius: 999px;
   background: rgba(212, 182, 143, 0.16);
   color: #8c714f;
-  font-size: 0.68rem;
+  font-size: 0.64rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -513,11 +514,22 @@ button {
 .checkout-address-card-details {
   display: block;
   color: #594434;
-  line-height: 1.55;
+  line-height: 1.45;
 }
 
 .checkout-address-card-name {
   font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.checkout-address-card-details {
+  font-size: 0.9rem;
+}
+
+@media (max-width: 640px) {
+  .checkout-address-list {
+    grid-template-columns: 1fr;
+  }
 }
 
 .hero-text {
