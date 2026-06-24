@@ -359,6 +359,8 @@ button {
 }
 
 .checkout-address-summary {
+  position: relative;
+  overflow: hidden;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -375,6 +377,19 @@ button {
   background: linear-gradient(180deg, rgba(255, 249, 241, 0.98), rgba(240, 229, 215, 0.92));
   border-color: rgba(212, 182, 143, 0.34);
   box-shadow: 0 14px 30px rgba(109, 91, 69, 0.08);
+}
+
+.checkout-address-summary.is-active::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: linear-gradient(180deg, rgba(212, 182, 143, 0.95), rgba(160, 126, 86, 0.72));
+}
+
+.checkout-address-summary.is-active .checkout-address-summary-label {
+  background: rgba(160, 126, 86, 0.18);
+  color: #7d623f;
 }
 
 .checkout-address-summary-label {
