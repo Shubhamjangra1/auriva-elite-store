@@ -148,21 +148,21 @@ button {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 14px 18px;
-  padding: 12px 18px;
+  gap: 12px 16px;
+  padding: 11px 16px;
   border-radius: 22px;
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   min-width: 0;
 }
 
 .brand-logo {
-  width: 46px;
-  height: 46px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   object-fit: cover;
   border: 1px solid var(--line);
@@ -210,6 +210,7 @@ button {
   color: var(--muted);
   justify-content: center;
   min-width: 0;
+  gap: 18px;
 }
 
 .header-actions {
@@ -1463,7 +1464,13 @@ body.modal-open {
 }
 
 @media (max-width: 760px) {
-  .site-header,
+  .site-header {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
   .site-footer {
     flex-direction: column;
     align-items: flex-start;
@@ -1487,7 +1494,7 @@ body.modal-open {
   .catalog-section,
   .contact-section,
   .site-footer {
-    padding: 20px;
+    padding: 18px;
     border-radius: 22px;
   }
 
@@ -1498,8 +1505,25 @@ body.modal-open {
     flex-wrap: wrap;
   }
 
-  .site-header {
-    gap: 16px;
+  .brand {
+    align-items: center;
+  }
+
+  .site-nav {
+    justify-content: flex-start;
+    gap: 14px;
+  }
+
+  .header-actions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .header-cart,
+  .header-auth-button,
+  .header-profile-button {
+    padding: 8px 11px;
+    font-size: 0.9rem;
   }
 
   .top-strip-copy h1 {
