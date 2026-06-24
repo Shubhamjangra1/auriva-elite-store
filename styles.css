@@ -385,9 +385,10 @@ button {
 
 .field-label {
   display: block;
-  margin-bottom: 8px;
-  font-size: 0.92rem;
-  color: var(--muted);
+  margin-bottom: 7px;
+  font-size: 0.88rem;
+  letter-spacing: 0.03em;
+  color: #9b846a;
 }
 
 .search-input,
@@ -396,8 +397,8 @@ button {
   border: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.86);
   color: var(--text);
-  border-radius: 16px;
-  padding: 14px 16px;
+  border-radius: 14px;
+  padding: 13px 15px;
   outline: none;
 }
 
@@ -570,6 +571,12 @@ button {
   border: 1px solid rgba(109, 91, 69, 0.1);
   background: rgba(255, 255, 255, 0.74);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.56);
+}
+
+.checkout-form {
+  display: grid;
+  gap: 10px;
+  align-content: start;
 }
 
 .panel-head,
@@ -775,7 +782,7 @@ button {
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 10px;
 }
 
 .field-span-2 {
@@ -784,24 +791,28 @@ button {
 
 .text-area {
   resize: vertical;
-  min-height: 96px;
+  min-height: 84px;
 }
 
 .checkout-note {
-  margin-top: 12px;
+  margin-top: 6px;
   padding: 12px 14px;
-  border-radius: 14px;
-  background: rgba(239, 229, 216, 0.72);
-  font-size: 0.94rem;
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(245, 237, 226, 0.88), rgba(239, 229, 216, 0.76));
+  border: 1px solid rgba(109, 91, 69, 0.08);
+  font-size: 0.92rem;
 }
 
 .checkout-actions {
-  margin-top: 14px;
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .feedback-text {
-  margin: 12px 0 0;
-  min-height: 22px;
+  margin: 8px 0 0;
+  min-height: 20px;
+  font-size: 0.92rem;
 }
 
 .contact-list {
