@@ -646,6 +646,14 @@ button {
   min-width: 0;
 }
 
+.cart-item-side {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
 .cart-item-name {
   font-weight: 600;
 }
@@ -660,8 +668,8 @@ button {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  margin-top: 7px;
-  padding: 5px 8px;
+  margin-top: 6px;
+  padding: 4px 7px;
   border-radius: 999px;
   background: linear-gradient(180deg, rgba(251, 248, 243, 0.96), rgba(245, 239, 231, 0.88));
   border: 1px solid rgba(109, 91, 69, 0.09);
@@ -669,13 +677,13 @@ button {
 }
 
 .quantity-button {
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   border: 1px solid rgba(109, 91, 69, 0.12);
   background: rgba(255, 255, 255, 0.94);
   color: var(--text);
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   line-height: 1;
   padding: 0;
   box-shadow: 0 6px 14px rgba(97, 72, 39, 0.05);
@@ -700,12 +708,20 @@ button {
   color: var(--text);
 }
 
-.cart-item .remove-item-button {
-  flex: 0 0 auto;
+.cart-item-line-total {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(251, 248, 243, 0.9);
+  border: 1px solid rgba(109, 91, 69, 0.1);
+  color: var(--text);
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .remove-item-button {
-  align-self: center;
+  align-self: flex-end;
   border: 0;
   background: transparent;
   color: #a0866f;

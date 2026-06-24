@@ -1304,7 +1304,7 @@ function renderCart() {
   if (headerCartCount) headerCartCount.textContent = String(totalItems);
   if (cartCountElement) cartCountElement.textContent = String(totalItems);
   if (cartTotalElement) {
-    cartTotalElement.textContent = `\u20B9${totalPrice.toLocaleString("en-IN")}`;
+    cartTotalElement.textContent = `₹${totalPrice.toLocaleString("en-IN")}`;
   }
 
   if (!cartItemsContainer) return;
@@ -1318,7 +1318,7 @@ function renderCart() {
   cartItemsContainer.innerHTML = "";
 
   fullItems.forEach((item) => {
-    const lineTotal = `\u20B9${(item.price * item.quantity).toLocaleString("en-IN")}`;
+    const lineTotal = `₹${(item.price * item.quantity).toLocaleString("en-IN")}`;
     const row = document.createElement("div");
     row.className = "cart-item";
     row.innerHTML = `
@@ -1328,7 +1328,7 @@ function renderCart() {
         </div>
         <div class="cart-item-copy">
           <div class="cart-item-name">${item.name}</div>
-          <div class="cart-item-meta">${item.priceText} each &middot; ${lineTotal} total</div>
+          <div class="cart-item-meta">${item.priceText} each</div>
           <div class="cart-item-quantity-controls" aria-label="Adjust quantity for ${item.name}">
             <button class="quantity-button quantity-decrease" type="button" aria-label="Decrease quantity">&minus;</button>
             <span class="cart-item-quantity">${item.quantity}</span>
@@ -1336,7 +1336,10 @@ function renderCart() {
           </div>
         </div>
       </div>
-      <button class="remove-item-button" type="button">Remove</button>
+      <div class="cart-item-side">
+        <span class="cart-item-line-total">${lineTotal}</span>
+        <button class="remove-item-button" type="button">Remove</button>
+      </div>
     `;
 
     row.querySelector(".quantity-decrease")?.addEventListener("click", () => {
