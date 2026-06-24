@@ -1234,6 +1234,8 @@ button {
   display: grid;
   gap: 14px;
   margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(155, 132, 106, 0.14);
 }
 
 .product-review-heading {
@@ -1241,7 +1243,8 @@ button {
   align-items: flex-end;
   justify-content: space-between;
   gap: 16px;
-  padding: 2px 2px 0;
+  padding: 0 2px 2px;
+  border-bottom: 1px solid rgba(155, 132, 106, 0.08);
 }
 
 .product-review-heading > div {
@@ -1441,16 +1444,16 @@ button {
   position: relative;
   margin: 0;
   color: var(--text);
-  line-height: 1.75;
-  padding-left: 52px;
+  line-height: 1.72;
+  padding-left: 48px;
 }
 
 .product-review-item p::before {
   content: "“";
   position: absolute;
   left: 0;
-  top: -14px;
-  font-size: 2.6rem;
+  top: -12px;
+  font-size: 2.2rem;
   line-height: 1;
   color: rgba(212, 182, 143, 0.28);
   font-family: Georgia, "Times New Roman", serif;
