@@ -12,6 +12,7 @@ const clearCartButton = document.getElementById("clear-cart-button");
 const checkoutForm = document.getElementById("checkout-form");
 const checkoutButton = document.getElementById("checkout-button");
 const checkoutFeedback = document.getElementById("checkout-feedback");
+const checkoutAddressHint = document.getElementById("checkout-address-hint");
 const checkoutModal = document.getElementById("checkout-modal");
 const checkoutModalCloseButton = document.getElementById("checkout-modal-close");
 const checkoutAddressSelect = document.getElementById("checkout-address-select");
@@ -258,6 +259,9 @@ function renderCheckoutAddressOptions(profile, selectedId = "") {
   if (addresses.length === 0) {
     checkoutAddressSelect.innerHTML = '<option value="">Choose from saved addresses</option>';
     checkoutAddressSelect.disabled = true;
+    if (checkoutAddressHint) {
+      checkoutAddressHint.textContent = "Your default saved address will be used automatically.";
+    }
     return;
   }
 
@@ -276,6 +280,18 @@ function renderCheckoutAddressOptions(profile, selectedId = "") {
 
   checkoutAddressSelect.value = nextSelectedId || "";
   activeCheckoutAddressId = checkoutAddressSelect.value || nextSelectedId || "";
+
+  if (checkoutAddressHint) {
+    const selectedAddress = addresses.find((address) => address.id === checkoutAddressSelect.value) || addresses[0];
+    const defaultAddress = addresses.find((address) => address.id === normalized.defaultAddressId) || addresses[0];
+    if (selectedAddress && defaultAddress && selectedAddress.id === defaultAddress.id) {
+      checkoutAddressHint.textContent = `Using default: ${formatSavedAddressLabel(selectedAddress)}.`;
+    } else if (selectedAddress) {
+      checkoutAddressHint.textContent = `Using saved address: ${formatSavedAddressLabel(selectedAddress)}.`;
+    } else {
+      checkoutAddressHint.textContent = "Choose from your saved addresses.";
+    }
+  }
 }
 
 function renderProfileAddressBook(profile) {
@@ -2400,6 +2416,9 @@ checkoutAddressSelect?.addEventListener("change", () => {
 
   if (checkoutFeedback) {
     checkoutFeedback.textContent = `Using ${selectedAddress.label || "the selected"} saved address.`;
+  }
+  if (checkoutAddressHint) {
+    checkoutAddressHint.textContent = `Using saved address: ${formatSavedAddressLabel(selectedAddress)}.`;
   }
 });
 

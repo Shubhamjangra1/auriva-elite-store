@@ -345,11 +345,17 @@ button {
 .site-footer p,
 .modal-info-block p,
 .checkout-note,
+.checkout-address-hint,
 .search-row,
 .feedback-text,
 .empty-state {
   color: var(--muted);
   line-height: 1.7;
+}
+
+.checkout-address-hint {
+  margin: 8px 0 0;
+  font-size: 0.86rem;
 }
 
 .hero-text {
