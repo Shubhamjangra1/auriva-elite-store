@@ -69,6 +69,7 @@ const productReviewRatingInputs = Array.from(
 );
 const productReviewSubmit = document.getElementById("product-review-submit");
 const productReviewCount = document.getElementById("product-review-count");
+const productReviewSummary = document.getElementById("product-review-summary");
 const productReviewAuthNote = document.getElementById("product-review-auth-note");
 const productReviewSigninButton = document.getElementById("product-review-signin");
 const productReviewList = document.getElementById("product-review-list");
@@ -926,10 +927,46 @@ function formatReviewSummary(reviews) {
     return "0 reviews";
   }
 
-  const total = reviews.reduce((sum, review) => sum + (Number(review.rating) || 5), 0);
-  const average = total / reviews.length;
+  const stats = getReviewStats(reviews);
   const label = reviews.length === 1 ? "review" : "reviews";
-  return `${average.toFixed(1)} \u2605 · ${reviews.length} ${label}`;
+  return `${stats.average.toFixed(1)} \u2605 \u00B7 ${reviews.length} ${label}`;
+}
+
+function getReviewStats(reviews) {
+  const safeReviews = Array.isArray(reviews) ? reviews : [];
+
+  if (safeReviews.length === 0) {
+    return { average: 0, count: 0 };
+  }
+
+  const total = safeReviews.reduce((sum, review) => sum + (Number(review.rating) || 5), 0);
+  return {
+    average: total / safeReviews.length,
+    count: safeReviews.length,
+  };
+}
+
+function renderReviewSummary(reviews) {
+  if (!productReviewSummary) return;
+
+  const stats = getReviewStats(reviews);
+  if (!stats.count) {
+    productReviewSummary.innerHTML = '<span class="product-review-summary-chip">No ratings yet</span>';
+    return;
+  }
+
+  productReviewSummary.innerHTML = `
+    <span class="product-review-summary-chip">
+      <span class="product-review-summary-stars" aria-hidden="true">
+        ${renderReviewStars(Math.round(stats.average))}
+      </span>
+      <strong>${stats.average.toFixed(1)}</strong>
+      <span>average</span>
+    </span>
+    <span class="product-review-summary-chip product-review-summary-chip-soft">
+      ${stats.count} ${stats.count === 1 ? "review" : "reviews"}
+    </span>
+  `;
 }
 
 async function postProductReview(productId, author, comment, rating) {
@@ -988,6 +1025,7 @@ async function renderProductReviews(productId) {
   if (!productReviewList || !productReviewCount) return;
 
   productReviewCount.textContent = "Loading reviews…";
+  renderReviewSummary([]);
   productReviewList.innerHTML =
     '<p class="empty-state product-review-empty">Loading reviews for this product…</p>';
 
@@ -1001,6 +1039,7 @@ async function renderProductReviews(productId) {
   if (activeModalProductId !== productId) return;
 
   productReviewCount.textContent = formatReviewSummary(reviews);
+  renderReviewSummary(reviews);
 
   if (reviews.length === 0) {
     productReviewList.innerHTML =
@@ -2343,6 +2382,9 @@ function closeProductModal() {
   }
   if (productReviewCount) {
     productReviewCount.textContent = "0 reviews";
+  }
+  if (productReviewSummary) {
+    productReviewSummary.innerHTML = "";
   }
   activeModalProductId = null;
   activeGalleryIndex = 0;
