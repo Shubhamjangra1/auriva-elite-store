@@ -527,6 +527,48 @@ button {
 }
 
 @media (max-width: 640px) {
+  .product-modal-grid.has-visual {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .product-modal-grid.has-visual .product-modal-visual {
+    position: static;
+  }
+
+  .modal-actions {
+    gap: 8px;
+  }
+
+  .modal-actions .button,
+  .modal-actions a.button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .product-review-auth-note {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .product-review-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .product-review-item {
+    padding: 14px;
+  }
+
+  .product-review-item p {
+    padding-left: 0;
+  }
+
+  .product-review-item p::before {
+    left: 0;
+    top: -10px;
+  }
+
   .checkout-address-list {
     grid-template-columns: 1fr;
   }
@@ -1126,14 +1168,14 @@ button {
 }
 
 .product-modal-grid.has-visual {
-  grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
-  gap: 22px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr);
+  gap: 20px;
 }
 
 .product-modal-grid.has-visual .product-modal-visual {
   display: block;
   position: sticky;
-  top: 0;
+  top: 8px;
   align-self: start;
 }
 
@@ -1591,6 +1633,7 @@ button {
   display: grid;
   gap: 10px;
   padding-top: 2px;
+  align-content: start;
 }
 
 .product-modal-tagline {
@@ -1644,7 +1687,7 @@ button {
 
 .product-review-shell {
   display: grid;
-  gap: 14px;
+  gap: 12px;
   margin-top: 6px;
   padding-top: 10px;
   border-top: 1px solid rgba(155, 132, 106, 0.14);
@@ -1691,7 +1734,7 @@ button {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 16px;
+  gap: 14px;
   padding: 0 2px 2px;
   border-bottom: 1px solid rgba(155, 132, 106, 0.08);
 }
@@ -1719,8 +1762,8 @@ button {
 
 .product-review-form {
   display: grid;
-  gap: 12px;
-  padding: 14px;
+  gap: 10px;
+  padding: 13px;
   border-radius: 20px;
   background: rgba(251, 248, 243, 0.88);
   border: 1px solid rgba(109, 91, 69, 0.1);
@@ -1785,24 +1828,32 @@ button {
 .product-review-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   flex-wrap: wrap;
 }
 
 .product-review-count {
-  color: #9b846a;
-  font-size: 0.92rem;
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  color: #8f775d;
+  font-size: 0.88rem;
+  background: rgba(245, 235, 223, 0.74);
+  border: 1px solid rgba(155, 132, 106, 0.12);
+  white-space: nowrap;
 }
 
 .product-review-list {
   display: grid;
-  gap: 14px;
+  gap: 12px;
 }
 
 .product-review-item {
   position: relative;
-  padding: 16px 18px 16px 20px;
-  border-radius: 20px;
+  padding: 15px 16px 15px 18px;
+  border-radius: 18px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(250, 245, 238, 0.78));
   border: 1px solid rgba(109, 91, 69, 0.08);
@@ -1943,9 +1994,9 @@ button {
 
 .modal-actions {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   flex-wrap: wrap;
-  margin: 2px 0 14px;
+  margin: 2px 0 12px;
 }
 
 .auth-modal {
