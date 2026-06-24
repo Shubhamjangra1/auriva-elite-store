@@ -1318,16 +1318,22 @@ function renderCart() {
   cartItemsContainer.innerHTML = "";
 
   fullItems.forEach((item) => {
+    const lineTotal = `\u20B9${(item.price * item.quantity).toLocaleString("en-IN")}`;
     const row = document.createElement("div");
     row.className = "cart-item";
     row.innerHTML = `
-      <div>
-        <div class="cart-item-name">${item.name}</div>
-        <div class="cart-item-meta">${item.quantity} \u00D7 ${item.priceText}</div>
-        <div class="cart-item-quantity-controls" aria-label="Adjust quantity for ${item.name}">
-          <button class="quantity-button quantity-decrease" type="button" aria-label="Decrease quantity">−</button>
-          <span class="cart-item-quantity">${item.quantity}</span>
-          <button class="quantity-button quantity-increase" type="button" aria-label="Increase quantity">+</button>
+      <div class="cart-item-main">
+        <div class="cart-item-thumb">
+          <img src="${item.imageSrc}" alt="${item.name}" />
+        </div>
+        <div class="cart-item-copy">
+          <div class="cart-item-name">${item.name}</div>
+          <div class="cart-item-meta">${item.priceText} each &middot; ${lineTotal} total</div>
+          <div class="cart-item-quantity-controls" aria-label="Adjust quantity for ${item.name}">
+            <button class="quantity-button quantity-decrease" type="button" aria-label="Decrease quantity">&minus;</button>
+            <span class="cart-item-quantity">${item.quantity}</span>
+            <button class="quantity-button quantity-increase" type="button" aria-label="Increase quantity">+</button>
+          </div>
         </div>
       </div>
       <button class="remove-item-button" type="button">Remove</button>
