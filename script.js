@@ -104,6 +104,7 @@ let toastTimer = null;
 const lastPincodeLookupByScope = new Map();
 let activeCheckoutAddressId = "";
 let editingProfileAddressId = "";
+let editingProfileAddressLabel = "";
 let countryStateCityModule = null;
 let authUser = null;
 let authSessionToken = "";
@@ -1236,6 +1237,7 @@ function clearProfileAddressForm() {
   if (profileLandmarkInput) profileLandmarkInput.value = "";
   if (profileDefaultAddress) profileDefaultAddress.checked = true;
   editingProfileAddressId = "";
+  editingProfileAddressLabel = "";
   updateProfileAddressFormMode();
 }
 
@@ -1248,6 +1250,9 @@ function updateProfileAddressFormMode() {
   }
   if (profileEditBadge) {
     profileEditBadge.hidden = !editingProfileAddressId;
+    profileEditBadge.innerHTML = editingProfileAddressId
+      ? `<span class="profile-edit-badge-icon" aria-hidden="true">✦</span><span>Updating: ${escapeHtml(editingProfileAddressLabel || "saved address")}</span>`
+      : "";
   }
 }
 
@@ -1267,6 +1272,7 @@ function beginEditingProfileAddress(addressId) {
   if (!address) return;
 
   editingProfileAddressId = address.id;
+  editingProfileAddressLabel = address.label || address.city || address.state || "saved address";
   populateProfileForm(address, { replace: true });
   if (profileDefaultAddress) profileDefaultAddress.checked = address.id === profile.defaultAddressId;
   updateProfileAddressFormMode();
@@ -1523,6 +1529,7 @@ function clearAuthSession() {
   clearStoredAuthActivity();
   activeCheckoutAddressId = "";
   editingProfileAddressId = "";
+  editingProfileAddressLabel = "";
 
   try {
     localStorage.removeItem(AUTH_SESSION_KEY);
