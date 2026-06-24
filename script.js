@@ -1257,6 +1257,36 @@ function removeFromCart(productId) {
   if (product) showToast(`${product.name} removed from cart`);
 }
 
+function updateCartItemQuantity(productId, delta) {
+  const product = findProduct(productId);
+  if (!product || !delta) return;
+
+  const cart = getCart();
+  const item = cart.find((entry) => entry.id === productId);
+
+  if (!item) {
+    if (delta > 0) {
+      cart.push({ id: productId, quantity: 1 });
+    } else {
+      return;
+    }
+  } else {
+    item.quantity += delta;
+    if (item.quantity <= 0) {
+      const index = cart.findIndex((entry) => entry.id === productId);
+      if (index >= 0) cart.splice(index, 1);
+    }
+  }
+
+  saveCart(cart);
+  renderCart();
+  showToast(
+    delta > 0
+      ? `${product.name} added to cart`
+      : `${product.name} removed from cart`
+  );
+}
+
 function renderCart() {
   const fullItems = getCart()
     .map((item) => {
@@ -1294,10 +1324,21 @@ function renderCart() {
       <div>
         <div class="cart-item-name">${item.name}</div>
         <div class="cart-item-meta">${item.quantity} \u00D7 ${item.priceText}</div>
+        <div class="cart-item-quantity-controls" aria-label="Adjust quantity for ${item.name}">
+          <button class="quantity-button quantity-decrease" type="button" aria-label="Decrease quantity">−</button>
+          <span class="cart-item-quantity">${item.quantity}</span>
+          <button class="quantity-button quantity-increase" type="button" aria-label="Increase quantity">+</button>
+        </div>
       </div>
       <button class="remove-item-button" type="button">Remove</button>
     `;
 
+    row.querySelector(".quantity-decrease")?.addEventListener("click", () => {
+      updateCartItemQuantity(item.id, -1);
+    });
+    row.querySelector(".quantity-increase")?.addEventListener("click", () => {
+      updateCartItemQuantity(item.id, 1);
+    });
     row
       .querySelector(".remove-item-button")
       ?.addEventListener("click", () => removeFromCart(item.id));
