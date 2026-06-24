@@ -1115,6 +1115,69 @@ function collectCheckoutProfile() {
   };
 }
 
+function setCheckoutFieldError(field, message) {
+  if (!field) return;
+  field.classList.add("is-invalid");
+  field.setAttribute("aria-invalid", "true");
+  if (message) field.setAttribute("title", message);
+}
+
+function clearCheckoutFieldError(field) {
+  if (!field) return;
+  field.classList.remove("is-invalid");
+  field.removeAttribute("aria-invalid");
+  field.removeAttribute("title");
+}
+
+function clearCheckoutFieldErrors() {
+  [customerName, customerPhone, customerAddress, customerState, customerCity, customerPincode]
+    .filter(Boolean)
+    .forEach((field) => clearCheckoutFieldError(field));
+}
+
+function validateCheckoutForm() {
+  clearCheckoutFieldErrors();
+
+  const name = customerName?.value.trim() || "";
+  const phone = customerPhone?.value.trim() || "";
+  const address = customerAddress?.value.trim() || "";
+  const state = customerState?.value.trim() || "";
+  const city = customerCity?.value.trim() || "";
+  const pincode = customerPincode?.value.trim() || "";
+
+  if (name.length < 2) {
+    setCheckoutFieldError(customerName, "Enter your full name");
+    return { error: "Please enter your full name.", field: customerName };
+  }
+
+  if (!/^\d{10}$/.test(phone)) {
+    setCheckoutFieldError(customerPhone, "Enter exactly 10 digits");
+    return { error: "Phone number must be exactly 10 digits.", field: customerPhone };
+  }
+
+  if (address.length < 8) {
+    setCheckoutFieldError(customerAddress, "Enter a complete address");
+    return { error: "Address should be at least 8 characters long.", field: customerAddress };
+  }
+
+  if (!state) {
+    setCheckoutFieldError(customerState, "Select a state");
+    return { error: "Please choose your state.", field: customerState };
+  }
+
+  if (!city) {
+    setCheckoutFieldError(customerCity, "Select a city");
+    return { error: "Please choose your city or district.", field: customerCity };
+  }
+
+  if (!/^\d{6}$/.test(pincode)) {
+    setCheckoutFieldError(customerPincode, "Enter exactly 6 digits");
+    return { error: "Pincode must be exactly 6 digits.", field: customerPincode };
+  }
+
+  return { error: "" };
+}
+
 function populateCheckoutProfile(profile, { replace = false } = {}) {
   if (!profile) return;
 
@@ -2375,9 +2438,8 @@ function buildCheckoutWhatsappMessage() {
   const landmark = customerLandmark?.value.trim() || "";
   const note = customerNote?.value.trim() || "";
 
-  if (!name || !phone || !address || !state || !city || !pincode) {
-    return { error: "Please fill name, phone, address, state, city, and pincode." };
-  }
+  const validation = validateCheckoutForm();
+  if (validation.error) return { error: validation.error, field: validation.field };
 
   const lines = [
     "Hello Auriva \u00C9lite, I want to place this order:",
@@ -2463,6 +2525,14 @@ profilePincodeInput?.addEventListener("input", () => {
 });
 
 checkoutForm?.addEventListener("input", () => {
+  clearCheckoutFieldErrors();
+  if (authUser) {
+    void persistCheckoutProfile();
+  }
+});
+
+checkoutForm?.addEventListener("change", () => {
+  clearCheckoutFieldErrors();
   if (authUser) {
     void persistCheckoutProfile();
   }
@@ -2514,6 +2584,7 @@ checkoutForm?.addEventListener("submit", async (event) => {
   if (result.error) {
     if (checkoutFeedback) checkoutFeedback.textContent = result.error;
     showToast(result.error);
+    result.field?.focus?.();
     return;
   }
 

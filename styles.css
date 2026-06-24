@@ -530,6 +530,45 @@ button {
   .checkout-address-list {
     grid-template-columns: 1fr;
   }
+
+  .checkout-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .checkout-modal-dialog {
+    width: min(100% - 14px, 1040px);
+    margin: 8px auto;
+    padding: 14px;
+    border-radius: 20px;
+  }
+
+  .checkout-layout-modal {
+    gap: 10px;
+  }
+
+  .checkout-layout-modal .cart-panel {
+    position: static;
+  }
+
+  .cart-panel,
+  .checkout-form {
+    padding: 14px;
+    border-radius: 20px;
+  }
+
+  .cart-item {
+    align-items: flex-start;
+  }
+
+  .cart-item-side {
+    gap: 6px;
+  }
+
+  .checkout-actions .button,
+  .auth-actions .button,
+  .profile-actions .button {
+    width: 100%;
+  }
 }
 
 .hero-text {
@@ -587,6 +626,13 @@ button {
 .text-input:focus {
   border-color: var(--line-strong);
   box-shadow: 0 0 0 4px rgba(203, 176, 143, 0.14);
+}
+
+.search-input.is-invalid,
+.text-input.is-invalid {
+  border-color: rgba(155, 78, 64, 0.55);
+  box-shadow: 0 0 0 4px rgba(155, 78, 64, 0.1);
+  background: rgba(255, 248, 246, 0.92);
 }
 
 .search-row {
