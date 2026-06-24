@@ -611,24 +611,24 @@ button {
 .cart-item {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
+  gap: 14px;
   align-items: center;
-  padding: 14px 14px 13px;
+  padding: 13px 13px 12px;
   border-radius: 18px;
 }
 
 .cart-item-main {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   min-width: 0;
 }
 
 .cart-item-thumb {
-  width: 54px;
-  height: 54px;
-  flex: 0 0 54px;
-  border-radius: 16px;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  border-radius: 14px;
   overflow: hidden;
   border: 1px solid rgba(109, 91, 69, 0.1);
   background: linear-gradient(180deg, #f8f3eb, #f1e8dd);
@@ -653,15 +653,15 @@ button {
 .cart-item-meta {
   margin-top: 4px;
   color: var(--muted);
-  font-size: 0.92rem;
+  font-size: 0.9rem;
 }
 
 .cart-item-quantity-controls {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  margin-top: 10px;
-  padding: 6px 10px;
+  gap: 6px;
+  margin-top: 7px;
+  padding: 5px 8px;
   border-radius: 999px;
   background: linear-gradient(180deg, rgba(251, 248, 243, 0.96), rgba(245, 239, 231, 0.88));
   border: 1px solid rgba(109, 91, 69, 0.09);
@@ -669,13 +669,13 @@ button {
 }
 
 .quantity-button {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   border: 1px solid rgba(109, 91, 69, 0.12);
   background: rgba(255, 255, 255, 0.94);
   color: var(--text);
-  font-size: 1rem;
+  font-size: 0.95rem;
   line-height: 1;
   padding: 0;
   box-shadow: 0 6px 14px rgba(97, 72, 39, 0.05);
@@ -694,7 +694,7 @@ button {
 }
 
 .cart-item-quantity {
-  min-width: 16px;
+  min-width: 15px;
   text-align: center;
   font-weight: 700;
   color: var(--text);
@@ -706,18 +706,17 @@ button {
 
 .remove-item-button {
   align-self: center;
-  border: 1px solid rgba(109, 91, 69, 0.11);
-  background: rgba(255, 255, 255, 0.88);
-  color: #947f68;
+  border: 0;
+  background: transparent;
+  color: #a0866f;
   font-weight: 600;
-  padding: 8px 12px;
-  border-radius: 999px;
-  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+  padding: 4px 2px;
+  border-radius: 0;
+  transition: color 0.16s ease, transform 0.16s ease;
 }
 
 .remove-item-button:hover {
-  border-color: rgba(109, 91, 69, 0.22);
-  box-shadow: 0 10px 20px rgba(97, 72, 39, 0.07);
+  color: #7c6350;
   transform: translateY(-1px);
 }
 
