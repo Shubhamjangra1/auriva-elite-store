@@ -14,6 +14,7 @@ const checkoutButton = document.getElementById("checkout-button");
 const checkoutFeedback = document.getElementById("checkout-feedback");
 const checkoutAddressHint = document.getElementById("checkout-address-hint");
 const checkoutAddressSummary = document.getElementById("checkout-address-summary");
+const checkoutAddressSummaryLabel = document.getElementById("checkout-address-summary-label");
 const checkoutAddressSummaryText = document.getElementById("checkout-address-summary-text");
 const checkoutModal = document.getElementById("checkout-modal");
 const checkoutModalCloseButton = document.getElementById("checkout-modal-close");
@@ -300,11 +301,18 @@ function renderCheckoutAddressOptions(profile, selectedId = "") {
     checkoutAddressSummary.hidden = false;
   }
 
-  if (checkoutAddressSummaryText) {
+  if (checkoutAddressSummaryText || checkoutAddressSummaryLabel) {
     const selectedAddress = addresses.find((address) => address.id === checkoutAddressSelect.value) || addresses[0];
-    checkoutAddressSummaryText.textContent = selectedAddress
-      ? `${formatSavedAddressLabel(selectedAddress)}${selectedAddress.id === normalized.defaultAddressId ? " • default" : ""}`
-      : "Choose a saved address";
+    const isDefault = Boolean(selectedAddress && selectedAddress.id === normalized.defaultAddressId);
+    checkoutAddressSummary.classList.toggle("is-active", !isDefault);
+    if (checkoutAddressSummaryLabel) {
+      checkoutAddressSummaryLabel.textContent = isDefault ? "Default" : "Selected";
+    }
+    if (checkoutAddressSummaryText) {
+      checkoutAddressSummaryText.textContent = selectedAddress
+        ? formatSavedAddressLabel(selectedAddress)
+        : "Choose a saved address";
+    }
   }
 }
 
@@ -2436,11 +2444,14 @@ checkoutAddressSelect?.addEventListener("change", () => {
   }
   if (checkoutAddressSummary) {
     checkoutAddressSummary.hidden = false;
+    checkoutAddressSummary.classList.toggle("is-active", selectedAddress.id !== getDefaultSavedAddress(profile)?.id);
+  }
+  if (checkoutAddressSummaryLabel) {
+    checkoutAddressSummaryLabel.textContent =
+      selectedAddress.id === getDefaultSavedAddress(profile)?.id ? "Default" : "Selected";
   }
   if (checkoutAddressSummaryText) {
-    checkoutAddressSummaryText.textContent = `${formatSavedAddressLabel(selectedAddress)}${
-      selectedAddress.id === getDefaultSavedAddress(profile)?.id ? " • default" : ""
-    }`;
+    checkoutAddressSummaryText.textContent = formatSavedAddressLabel(selectedAddress);
   }
 });
 
