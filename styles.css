@@ -1319,10 +1319,10 @@ button {
 
 .product-review-stars {
   display: inline-flex;
-  gap: 1px;
-  margin-bottom: 8px;
-  font-size: 0.82rem;
-  letter-spacing: 0.08em;
+  gap: 2px;
+  margin-bottom: 6px;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
 }
 
 .product-review-stars .star-filled {
