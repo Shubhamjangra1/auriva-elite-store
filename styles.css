@@ -1346,35 +1346,36 @@ button {
 
 .auth-modal-dialog {
   position: relative;
-  width: min(720px, calc(100% - 28px));
+  width: min(760px, calc(100% - 28px));
   margin: 24px auto;
   border-radius: 28px;
-  padding: 28px;
+  padding: 26px;
   background: var(--panel-strong);
-  border: 1px solid var(--line);
+  border: 1px solid rgba(109, 91, 69, 0.1);
   box-shadow: var(--shadow);
 }
 
 .auth-modal-dialog h2 {
   margin: 0;
   font-family: "Cormorant Garamond", serif;
-  font-size: clamp(2rem, 4vw, 3rem);
+  font-size: clamp(1.9rem, 3.8vw, 2.75rem);
   line-height: 0.95;
 }
 
 .auth-modal-text {
-  margin: 12px 0 0;
+  margin: 10px 0 0;
   color: var(--muted);
   line-height: 1.7;
 }
 
 .auth-status {
-  margin-top: 18px;
-  padding: 14px 16px;
+  margin-top: 14px;
+  padding: 13px 15px;
   border-radius: 16px;
-  border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(109, 91, 69, 0.1);
+  background: rgba(255, 255, 255, 0.82);
   color: var(--muted);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.64);
 }
 
 .auth-status[data-tone="success"] {
@@ -1391,14 +1392,19 @@ button {
 
 .auth-form {
   display: grid;
-  gap: 16px;
-  margin-top: 18px;
+  gap: 14px;
+  margin-top: 16px;
 }
 
 .auth-actions {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
+  margin-top: 2px;
+}
+
+.auth-actions .button {
+  border-radius: 999px;
 }
 
 .auth-help {
