@@ -371,12 +371,14 @@ button {
   background: linear-gradient(180deg, rgba(255, 252, 247, 0.98), rgba(244, 234, 222, 0.88));
   border: 1px solid rgba(212, 182, 143, 0.22);
   box-shadow: 0 10px 24px rgba(109, 91, 69, 0.05);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
 }
 
 .checkout-address-summary.is-active {
   background: linear-gradient(180deg, rgba(255, 249, 241, 0.98), rgba(240, 229, 215, 0.92));
   border-color: rgba(212, 182, 143, 0.34);
-  box-shadow: 0 14px 30px rgba(109, 91, 69, 0.08);
+  box-shadow: 0 16px 34px rgba(109, 91, 69, 0.1);
+  transform: translateY(-1px);
 }
 
 .checkout-address-summary.is-active::before {
@@ -385,6 +387,16 @@ button {
   inset: 0 auto 0 0;
   width: 4px;
   background: linear-gradient(180deg, rgba(212, 182, 143, 0.95), rgba(160, 126, 86, 0.72));
+}
+
+.checkout-address-summary.is-active::after {
+  content: "";
+  position: absolute;
+  inset: auto 10px 8px 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: radial-gradient(ellipse at center, rgba(212, 182, 143, 0.2), rgba(212, 182, 143, 0));
+  pointer-events: none;
 }
 
 .checkout-address-summary.is-active .checkout-address-summary-label {
