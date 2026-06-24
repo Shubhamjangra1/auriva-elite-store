@@ -619,6 +619,16 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
+function getReviewInitials(name) {
+  const parts = String(name || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+  if (parts.length === 0) return "G";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return `${parts[0][0] || ""}${parts[1][0] || ""}`.toUpperCase();
+}
+
 async function renderProductReviews(productId) {
   if (!productReviewList || !productReviewCount) return;
 
@@ -649,12 +659,20 @@ async function renderProductReviews(productId) {
     .map(
       (review) => `
         <article class="product-review-item">
-          <div class="product-review-stars" aria-label="${Number(review.rating) || 5} out of 5 stars">
-            ${renderReviewStars(review.rating)}
-          </div>
-          <div class="product-review-head">
-            <strong>${escapeHtml(review.author)}</strong>
-            <span>${escapeHtml(formatReviewDate(review.timestamp))}</span>
+          <div class="product-review-top">
+            <div class="product-review-avatar" aria-hidden="true">${escapeHtml(getReviewInitials(review.author))}</div>
+            <div class="product-review-meta">
+              <div class="product-review-head">
+                <strong>${escapeHtml(review.author)}</strong>
+                <span>${escapeHtml(formatReviewDate(review.timestamp))}</span>
+              </div>
+              <div class="product-review-subhead">
+                <span class="product-review-badge">Customer review</span>
+                <span class="product-review-stars" aria-label="${Number(review.rating) || 5} out of 5 stars">
+                  ${renderReviewStars(review.rating)}
+                </span>
+              </div>
+            </div>
           </div>
           <p>${escapeHtml(review.comment)}</p>
         </article>
