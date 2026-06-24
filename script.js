@@ -22,6 +22,7 @@ const profileModal = document.getElementById("profile-modal");
 const profileModalCloseButton = document.getElementById("profile-modal-close");
 const profileForm = document.getElementById("profile-form");
 const profileFeedback = document.getElementById("profile-feedback");
+const profileEditBadge = document.getElementById("profile-edit-badge");
 const profileCancelEditButton = document.getElementById("profile-cancel-edit-button");
 const profileSaveButton = document.getElementById("profile-save-button");
 const profileEmail = document.getElementById("profile-email");
@@ -1244,6 +1245,9 @@ function updateProfileAddressFormMode() {
   }
   if (profileCancelEditButton) {
     profileCancelEditButton.hidden = !editingProfileAddressId;
+  }
+  if (profileEditBadge) {
+    profileEditBadge.hidden = !editingProfileAddressId;
   }
 }
 

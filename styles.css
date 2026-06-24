@@ -1235,6 +1235,22 @@ button {
   gap: 14px;
 }
 
+.profile-edit-badge {
+  margin: 0;
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(212, 182, 143, 0.16);
+  color: #8c714f;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .profile-default-toggle {
   display: flex;
   align-items: center;
