@@ -61,6 +61,8 @@ const modalInfoBlock = document.getElementById("product-modal-info-block");
 const modalInfo = document.getElementById("product-modal-info");
 const modalIncludes = document.getElementById("product-modal-includes");
 const modalHighlights = document.getElementById("product-modal-highlights");
+const recentViewedBlock = document.getElementById("product-recently-viewed-block");
+const recentViewedList = document.getElementById("product-recently-viewed");
 const productReviewForm = document.getElementById("product-review-form");
 const productReviewName = document.getElementById("product-review-name");
 const productReviewText = document.getElementById("product-review-text");
@@ -102,6 +104,7 @@ const AUTH_ACTIVITY_KEY = "auriva-elite-auth-last-activity";
 const AUTH_IDLE_TIMEOUT_MS = 5 * 60 * 1000;
 const AUTH_HEARTBEAT_THROTTLE_MS = 30 * 1000;
 const PROFILE_STORAGE_PREFIX = "auriva-elite-profile:";
+const RECENTLY_VIEWED_KEY = "auriva-elite-recently-viewed";
 
 let activeModalProductId = null;
 let activeGalleryIndex = 0;
@@ -967,6 +970,63 @@ function renderReviewSummary(reviews) {
       ${stats.count} ${stats.count === 1 ? "review" : "reviews"}
     </span>
   `;
+}
+
+function readRecentlyViewedIds() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(RECENTLY_VIEWED_KEY) || "[]");
+    return Array.isArray(stored) ? stored.filter((value) => typeof value === "string" && value.trim()) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveRecentlyViewedIds(ids) {
+  try {
+    localStorage.setItem(RECENTLY_VIEWED_KEY, JSON.stringify(ids.slice(0, 5)));
+  } catch {
+    // Ignore storage issues.
+  }
+}
+
+function trackRecentlyViewedProduct(productId) {
+  if (!productId) return;
+
+  const nextIds = [productId, ...readRecentlyViewedIds().filter((id) => id !== productId)].slice(0, 5);
+  saveRecentlyViewedIds(nextIds);
+}
+
+function renderRecentlyViewedProducts(currentProductId) {
+  if (!recentViewedBlock || !recentViewedList) return;
+
+  const ids = readRecentlyViewedIds().filter((id) => id !== currentProductId);
+  const recentProducts = ids
+    .map((id) => findProduct(id))
+    .filter(Boolean)
+    .slice(0, 4);
+
+  if (recentProducts.length === 0) {
+    recentViewedBlock.style.display = "none";
+    recentViewedList.innerHTML = "";
+    return;
+  }
+
+  recentViewedBlock.style.display = "";
+  recentViewedList.innerHTML = recentProducts
+    .map(
+      (product) => `
+        <button class="recent-product-card" type="button" data-open-product="${escapeHtml(product.id)}">
+          <span class="recent-product-card-image">
+            <img src="${product.imageSrc}" alt="${escapeHtml(product.name)}" loading="lazy" decoding="async" />
+          </span>
+          <span class="recent-product-card-copy">
+            <strong>${escapeHtml(product.name)}</strong>
+            <span>${escapeHtml(product.priceText)}</span>
+          </span>
+        </button>
+      `
+    )
+    .join("");
 }
 
 async function postProductReview(productId, author, comment, rating) {
@@ -1936,6 +1996,18 @@ authLogoutButton?.addEventListener("click", logoutUser);
 productReviewSigninButton?.addEventListener("click", () => {
   openAuthModal();
 });
+recentViewedList?.addEventListener("click", (event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLElement)) return;
+
+  const button = target.closest("[data-open-product]");
+  if (!(button instanceof HTMLElement)) return;
+
+  const productId = button.dataset.openProduct || "";
+  if (!productId) return;
+
+  openProductModal(productId);
+});
 profileModalCloseButton?.addEventListener("click", closeProfileModal);
 profileCancelEditButton?.addEventListener("click", () => {
   cancelProfileAddressEdit();
@@ -2305,6 +2377,8 @@ function openProductModal(productId) {
     modalAmazonLink.style.display = product.amazonUrl ? "" : "none";
   }
 
+  trackRecentlyViewedProduct(product.id);
+  renderRecentlyViewedProducts(product.id);
   renderProductReviews(product.id);
   resetProductReviewForm();
   updateReviewFormAccess();
@@ -2385,6 +2459,12 @@ function closeProductModal() {
   }
   if (productReviewSummary) {
     productReviewSummary.innerHTML = "";
+  }
+  if (recentViewedList) {
+    recentViewedList.innerHTML = "";
+  }
+  if (recentViewedBlock) {
+    recentViewedBlock.style.display = "";
   }
   activeModalProductId = null;
   activeGalleryIndex = 0;
