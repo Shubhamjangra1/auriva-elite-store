@@ -1925,7 +1925,6 @@ async function logoutUser() {
   clearAuthSession();
   setAuthMessage("You have been signed out.", "neutral");
   closeProfileModal();
-  openAuthModal();
 }
 
 async function initializeAuth() {
